@@ -1,0 +1,53 @@
+.container {
+  max-width: 1200px;
+}
+
+.header {
+  margin-bottom: 30px;
+}
+
+.title {
+  color: #1a1a2e;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #666;
+}
+
+.filtros {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filtroBtn {
+  background: white;
+  border: 1px solid #ddd;
+  color: #555;
+  padding: 9px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.filtroBtn:hover {
+  border-color: #1a1a2e;
+  color: #1a1a2e;
+}
+
+.filtroActivo {
+  background: #1a1a2e;
+  border-color: #1a1a2e;
+  color: white;
+}
+
+.errorMsg {
+  color: #a94442;
+  background: #f8d7da;
+  padding: 12px 16px;
+  border-radius: 8px;
+}

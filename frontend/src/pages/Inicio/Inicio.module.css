@@ -1,0 +1,222 @@
+.container {
+  max-width: 1200px;
+}
+
+.title {
+  color: #1a1a2e;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.cardIcon {
+  font-size: 3rem;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+}
+
+.usuarios .cardIcon {
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.libros .cardIcon {
+  background: rgba(46, 204, 113, 0.1);
+}
+
+.prestamos .cardIcon {
+  background: rgba(231, 76, 60, 0.1);
+}
+
+.cardInfo h3 {
+  font-size: 2.5rem;
+  margin: 0;
+  color: #1a1a2e;
+}
+
+.cardInfo p {
+  margin: 5px 0 0;
+  color: #666;
+}
+
+.disponibles .cardIcon {
+  background: rgba(46, 204, 113, 0.1);
+}
+
+.activos .cardIcon {
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.vencidos .cardIcon {
+  background: rgba(231, 76, 60, 0.12);
+}
+
+.devueltos .cardIcon {
+  background: rgba(39, 174, 96, 0.12);
+}
+
+.fechaCard {
+  font-size: 1.6rem !important;
+}
+
+.secciones {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+@media (max-width: 900px) {
+  .secciones {
+    grid-template-columns: 1fr;
+  }
+}
+
+.seccionUnica {
+  margin-top: 24px;
+}
+
+.seccion {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.seccion h2 {
+  font-size: 1.05rem;
+  color: #1a1a2e;
+  margin: 0 0 18px;
+}
+
+.seccion h2 + ul + h2 {
+  margin-top: 28px;
+}
+
+.barraFila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.barraEtiqueta {
+  width: 80px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.barraPista {
+  flex: 1;
+  height: 14px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.barraRelleno {
+  height: 100%;
+  border-radius: 10px;
+  min-width: 2px;
+  transition: width 0.6s ease;
+}
+
+.barraValor {
+  width: 30px;
+  text-align: right;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.listaReciente {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listaReciente li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.listaReciente li:last-child {
+  border-bottom: none;
+}
+
+.listaReciente strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #1a1a2e;
+}
+
+.listaReciente small {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.stock {
+  font-weight: 600;
+  color: #27ae60;
+  white-space: nowrap;
+}
+
+.vacio {
+  color: #999;
+  font-style: italic;
+}
+
+.bienvenida {
+  background: linear-gradient(135deg, #0f3460, #16213e);
+  color: white;
+  border-radius: 16px;
+  padding: 26px 30px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.bienvenida h2 {
+  margin: 0 0 6px;
+}
+
+.bienvenida p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.cargando,
+.errorMsg {
+  text-align: center;
+  color: #666;
+  padding: 40px;
+}
