@@ -9,9 +9,10 @@ const Table = ({
   onView,
   editLabel = 'Editar',
   deleteLabel = 'Eliminar',
-  showDeleteFor = () => true
+  showDeleteFor = () => true,
+  customActions
 }) => {
-  const tieneAcciones = onEdit || onDelete || onView;
+  const tieneAcciones = onEdit || onDelete || onView || customActions;
 
   return (
     <div className={styles.tableContainer}>
@@ -66,6 +67,7 @@ const Table = ({
                           {deleteLabel}
                         </button>
                       )}
+                      {customActions && customActions(row)}
                     </td>
                   )}
                 </tr>

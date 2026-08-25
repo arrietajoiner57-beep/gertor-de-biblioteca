@@ -213,3 +213,40 @@
   background: #f4f4f4;
   color: #888;
 }
+
+.actionsGroup {
+  display: flex;
+  gap: 6px;
+}
+
+.btnAprobar {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.btnAprobar:hover {
+  background: #219a52;
+}
+
+.btnRechazar {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.btnRechazar:hover {
+  background: #c0392b;
+}

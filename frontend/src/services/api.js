@@ -67,6 +67,9 @@ export const getMisPrestamos = (estado) =>
   api.get('/prestamos/mis', { params: estado ? { estado } : {} });
 export const getPrestamo = (id) => api.get(`/prestamos/${id}`);
 export const createPrestamo = (data) => api.post('/prestamos', data);
+export const solicitarPrestamo = (data) => api.post('/prestamos/solicitar', data);
+export const aprobarPrestamo = (id) => api.put(`/prestamos/${id}/aprobar`);
+export const rechazarPrestamo = (id) => api.put(`/prestamos/${id}/rechazar`);
 export const updatePrestamo = (id, data) => api.put(`/prestamos/${id}`, data);
 export const devolverPrestamo = (id) => api.put(`/prestamos/${id}/devolver`);
 export const deletePrestamo = (id) => api.delete(`/prestamos/${id}`);

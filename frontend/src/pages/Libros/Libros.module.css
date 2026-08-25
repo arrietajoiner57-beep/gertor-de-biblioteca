@@ -138,3 +138,19 @@
 .btnSecondary:hover {
   background: #d0d0d0;
 }
+
+.solicitarBtn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.solicitarBtn:hover {
+  background: #219a52;
+}

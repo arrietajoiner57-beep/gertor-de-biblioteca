@@ -5,6 +5,7 @@ const COLORES = {
   activo: styles.azul,
   devuelto: styles.verde,
   vencido: styles.rojo,
+  pendiente: styles.naranja,
   disponible: styles.verde,
   agotado: styles.rojo,
   admin: styles.amarillo
@@ -14,6 +15,7 @@ const ETIQUETAS = {
   activo: 'Activo',
   devuelto: 'Devuelto',
   vencido: 'Vencido',
+  pendiente: 'Pendiente',
   disponible: 'Disponible',
   agotado: 'Agotado',
   admin: 'Administrador',

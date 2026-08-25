@@ -9,12 +9,15 @@ import {
   createPrestamo,
   updatePrestamo,
   devolverPrestamo,
+  aprobarPrestamo,
+  rechazarPrestamo,
   mensajeError
 } from '../../services/api';
 import styles from './Prestamos.module.css';
 
 const FILTROS = [
   { valor: '', etiqueta: 'Todos' },
+  { valor: 'pendiente', etiqueta: 'Pendientes' },
   { valor: 'activo', etiqueta: 'Activos' },
   { valor: 'vencido', etiqueta: 'Vencidos' },
   { valor: 'devuelto', etiqueta: 'Devueltos' }
@@ -149,6 +152,34 @@ const Prestamos = () => {
     }
   };
 
+  const handleAprobar = async (id) => {
+    if (!window.confirm('¿Aprobar esta solicitud de préstamo? Se descontará el stock disponible.')) {
+      return;
+    }
+
+    try {
+      const response = await aprobarPrestamo(id);
+      alert(response.data.message);
+      fetchPrestamos(filtro);
+    } catch (error) {
+      alert(mensajeError(error));
+    }
+  };
+
+  const handleRechazar = async (id) => {
+    if (!window.confirm('¿Rechazar esta solicitud de préstamo?')) {
+      return;
+    }
+
+    try {
+      const response = await rechazarPrestamo(id);
+      alert(response.data.message);
+      fetchPrestamos(filtro);
+    } catch (error) {
+      alert(mensajeError(error));
+    }
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -210,6 +241,24 @@ const Prestamos = () => {
         onDelete={(id) => handleDevolver(id)}
         deleteLabel="Devolver"
         showDeleteFor={(row) => row.estado === 'activo' || row.estado === 'vencido'}
+        customActions={(row) =>
+          row.estado === 'pendiente' ? (
+            <div className={styles.actionsGroup}>
+              <button
+                className={styles.btnAprobar}
+                onClick={() => handleAprobar(row.id)}
+              >
+                Aprobar
+              </button>
+              <button
+                className={styles.btnRechazar}
+                onClick={() => handleRechazar(row.id)}
+              >
+                Rechazar
+              </button>
+            </div>
+          ) : null
+        }
       />
 
       <Modal isOpen={editarAbierto} onClose={handleCloseModals} title={`Editar Préstamo #${prestamoEditar ? prestamoEditar.id : ''}`}>

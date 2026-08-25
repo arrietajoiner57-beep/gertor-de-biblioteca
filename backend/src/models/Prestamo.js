@@ -17,6 +17,8 @@ function filtroEstado(estado) {
       return "AND p.estado = 'activo' AND p.fecha_devolucion < CURDATE()";
     case 'devuelto':
       return "AND p.estado = 'devuelto'";
+    case 'pendiente':
+      return "AND p.estado = 'pendiente'";
     default:
       return '';
   }

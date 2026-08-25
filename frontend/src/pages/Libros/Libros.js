@@ -8,7 +8,8 @@ import {
   getLibro,
   createLibro,
   updateLibro,
-  deleteLibro
+  deleteLibro,
+  solicitarPrestamo
 } from '../../services/api';
 import { mensajeError } from '../../services/api';
 import styles from './Libros.module.css';
@@ -31,6 +32,10 @@ const Libros = () => {
   const [currentBook, setCurrentBook] = useState(null);
   const [detalle, setDetalle] = useState(null);
   const [errorModal, setErrorModal] = useState('');
+  const [solicitarModal, setSolicitarModal] = useState(false);
+  const [libroSolicitar, setLibroSolicitar] = useState(null);
+  const [cantidadSolicitar, setCantidadSolicitar] = useState(1);
+  const [errorSolicitar, setErrorSolicitar] = useState('');
   const [formData, setFormData] = useState(LIBRO_VACIO);
   const { esAdmin } = useAuth();
 
@@ -142,6 +147,35 @@ const Libros = () => {
     }
   };
 
+  const handleOpenSolicitar = (book) => {
+    setLibroSolicitar(book);
+    setCantidadSolicitar(1);
+    setErrorSolicitar('');
+    setSolicitarModal(true);
+  };
+
+  const handleCloseSolicitar = () => {
+    setSolicitarModal(false);
+    setLibroSolicitar(null);
+    setErrorSolicitar('');
+  };
+
+  const handleSolicitar = async (e) => {
+    e.preventDefault();
+    setErrorSolicitar('');
+
+    try {
+      await solicitarPrestamo({
+        libro_id: libroSolicitar.id,
+        cantidad: cantidadSolicitar
+      });
+      alert('Solicitud de préstamo enviada. Esperando aprobación del administrador.');
+      handleCloseSolicitar();
+    } catch (error) {
+      setErrorSolicitar(mensajeError(error));
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -182,6 +216,19 @@ const Libros = () => {
         onDelete={esAdmin ? handleDelete : undefined}
         editLabel="Editar"
         showDeleteFor={(row) => row.cantidad_disponible >= 0}
+        customActions={
+          !esAdmin
+            ? (row) =>
+                row.cantidad_disponible > 0 ? (
+                  <button
+                    className={styles.solicitarBtn}
+                    onClick={() => handleOpenSolicitar(row)}
+                  >
+                    Solicitar
+                  </button>
+                ) : null
+            : undefined
+        }
       />
 
       <Modal isOpen={detalleAbierto} onClose={() => setDetalleAbierto(false)} title="Detalle del Libro">
@@ -288,6 +335,51 @@ const Libros = () => {
             </button>
             <button type="submit" className={styles.btnPrimary}>
               {currentBook ? 'Actualizar' : 'Guardar'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+      <Modal
+        isOpen={solicitarModal}
+        onClose={handleCloseSolicitar}
+        title="Solicitar Préstamo"
+      >
+        <form onSubmit={handleSolicitar}>
+          {errorSolicitar && (
+            <div className={styles.errorAlerta} role="alert">{errorSolicitar}</div>
+          )}
+
+          <div className={styles.detalleGrid}>
+            <p><strong>Libro:</strong> {libroSolicitar ? libroSolicitar.titulo : ''}</p>
+            <p><strong>Autor:</strong> {libroSolicitar ? libroSolicitar.autor : ''}</p>
+            <p>
+              <strong>Disponibles:</strong>{' '}
+              {libroSolicitar ? libroSolicitar.cantidad_disponible : 0}
+            </p>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Cantidad a solicitar *</label>
+            <input
+              type="number"
+              min="1"
+              max={libroSolicitar ? libroSolicitar.cantidad_disponible : 1}
+              value={cantidadSolicitar}
+              onChange={(e) => setCantidadSolicitar(parseInt(e.target.value) || 1)}
+              required
+            />
+          </div>
+
+          <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '-10px' }}>
+            La fecha de devolución será 14 días a partir de hoy.
+          </p>
+
+          <div className={styles.formActions}>
+            <button type="button" className={styles.btnSecondary} onClick={handleCloseSolicitar}>
+              Cancelar
+            </button>
+            <button type="submit" className={styles.btnPrimary}>
+              Enviar Solicitud
             </button>
           </div>
         </form>

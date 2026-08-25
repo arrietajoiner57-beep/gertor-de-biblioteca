@@ -6,6 +6,7 @@ import styles from './MisPrestamos.module.css';
 
 const FILTROS = [
   { valor: '', etiqueta: 'Todos' },
+  { valor: 'pendiente', etiqueta: 'Pendientes' },
   { valor: 'activo', etiqueta: 'Activos' },
   { valor: 'vencido', etiqueta: 'Vencidos' },
   { valor: 'devuelto', etiqueta: 'Devueltos' }

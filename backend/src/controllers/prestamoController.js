@@ -189,6 +189,114 @@ const prestamoController = {
     }
   },
 
+  solicitar: async (req, res) => {
+    try {
+      const { libro_id, cantidad } = req.body;
+
+      if (!libro_id) {
+        return res.status(400).json({ message: 'Debe seleccionar un libro' });
+      }
+
+      const cant = parseInt(cantidad) || 1;
+      if (cant < 1) {
+        return res.status(400).json({ message: 'La cantidad debe ser al menos 1' });
+      }
+
+      const libro = await Libro.getById(libro_id);
+      if (!libro) {
+        return res.status(404).json({ message: 'El libro seleccionado no existe' });
+      }
+
+      if (cant > libro.cantidad_disponible) {
+        return res.status(400).json({
+          message: `El libro "${libro.titulo}" no tiene suficiente stock (disponibles: ${libro.cantidad_disponible})`
+        });
+      }
+
+      const hoy = new Date();
+      const fechaPrestamo = hoy.toISOString().split('T')[0];
+      const fechaDevolucion = new Date(hoy.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+      const prestamo = await Prestamo.create({
+        usuario_id: req.usuario.id,
+        fecha_prestamo: fechaPrestamo,
+        fecha_devolucion: fechaDevolucion,
+        estado: 'pendiente'
+      });
+
+      await DetallePrestamo.create({
+        prestamo_id: prestamo.id,
+        libro_id,
+        cantidad: cant
+      });
+
+      res.status(201).json({
+        message: 'Solicitud de préstamo enviada. Esperando aprobación del administrador.',
+        prestamo
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'No se pudo crear la solicitud de préstamo' });
+    }
+  },
+
+  aprobar: async (req, res) => {
+    try {
+      const estadoReal = await Prestamo.getEstadoReal(req.params.id);
+
+      if (!estadoReal) {
+        return res.status(404).json({ message: 'Préstamo no encontrado' });
+      }
+
+      if (estadoReal !== 'pendiente') {
+        return res.status(400).json({ message: 'Solo se pueden aprobar préstamos pendientes' });
+      }
+
+      const detalles = await DetallePrestamo.getByPrestamoId(req.params.id);
+
+      for (const detalle of detalles) {
+        const libro = await Libro.getById(detalle.libro_id);
+        if (libro.cantidad_disponible < detalle.cantidad) {
+          return res.status(400).json({
+            message: `El libro "${libro.titulo}" ya no tiene stock suficiente (disponibles: ${libro.cantidad_disponible})`
+          });
+        }
+      }
+
+      for (const detalle of detalles) {
+        const libro = await Libro.getById(detalle.libro_id);
+        await Libro.update(detalle.libro_id, {
+          cantidad_disponible: libro.cantidad_disponible - detalle.cantidad
+        });
+      }
+
+      await Prestamo.update(req.params.id, { estado: 'activo' });
+
+      res.json({ message: 'Préstamo aprobado correctamente' });
+    } catch (error) {
+      res.status(500).json({ message: 'No se pudo aprobar el préstamo' });
+    }
+  },
+
+  rechazar: async (req, res) => {
+    try {
+      const estadoReal = await Prestamo.getEstadoReal(req.params.id);
+
+      if (!estadoReal) {
+        return res.status(404).json({ message: 'Préstamo no encontrado' });
+      }
+
+      if (estadoReal !== 'pendiente') {
+        return res.status(400).json({ message: 'Solo se pueden rechazar préstamos pendientes' });
+      }
+
+      await Prestamo.delete(req.params.id);
+
+      res.json({ message: 'Solicitud de préstamo rechazada' });
+    } catch (error) {
+      res.status(500).json({ message: 'No se pudo rechazar el préstamo' });
+    }
+  },
+
   delete: async (req, res) => {
     try {
       const estadoReal = await Prestamo.getEstadoReal(req.params.id);
