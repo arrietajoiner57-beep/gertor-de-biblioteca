@@ -217,7 +217,8 @@ const Usuarios = () => {
                 onChange={handleChange}
                 required
               >
-                <option value="user">Usuario normal</option>
+                <option value="user">Usuario</option>
+                <option value="bibliotecario">Bibliotecario</option>
                 <option value="admin">Administrador</option>
               </select>
             </div>

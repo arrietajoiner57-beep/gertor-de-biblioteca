@@ -1,32 +1,38 @@
 .badge {
   display: inline-block;
   padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .verde {
-  background: #d4edda;
-  color: #1e7e34;
+  background: var(--color-success-light);
+  color: #047857;
 }
 
 .rojo {
-  background: #f8d7da;
-  color: #a94442;
+  background: var(--color-danger-light);
+  color: #b91c1c;
 }
 
-.amarillo {
-  background: #fff3cd;
-  color: #856404;
+.dorado {
+  background: var(--color-accent-light);
+  color: #92710a;
+}
+
+.esmeralda {
+  background: var(--color-success-light);
+  color: #047857;
 }
 
 .naranja {
-  background: #ffe0b2;
-  color: #e65100;
+  background: var(--color-orange-light);
+  color: #c2410c;
 }
 
 .azul {
-  background: #d1ecf1;
-  color: #0c5460;
+  background: var(--color-info-light);
+  color: #1d4ed8;
 }

@@ -9,7 +9,6 @@ const api = axios.create({
   baseURL: API_URL
 });
 
-// Adjunta el token a cada petición si existe sesión
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem(TOKEN_KEY);
   if (token) {
@@ -18,14 +17,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Si la sesión expira o es inválida, cierra la sesión automáticamente
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const { response, config } = error;
     const esLogin = config && config.url && config.url.includes('/auth/login');
+    const esPublico = config && config.url && (
+      config.url.includes('/public/') ||
+      config.url.includes('/auth/register')
+    );
 
-    if (response && response.status === 401 && !esLogin) {
+    if (response && response.status === 401 && !esLogin && !esPublico) {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USUARIO_KEY);
       if (!window.location.pathname.includes('/login')) {
@@ -37,16 +39,20 @@ api.interceptors.response.use(
   }
 );
 
-// Extrae el mensaje legible que envía el backend
 export function mensajeError(error, fallback = 'No se pudo completar la operación') {
   return (error.response && error.response.data && error.response.data.message) || fallback;
 }
 
 export const login = (data) => api.post('/auth/login', data);
+export const register = (data) => api.post('/auth/register', data);
 export const getMe = () => api.get('/auth/me');
 export const cambiarContrasena = (data) => api.put('/auth/password', data);
 
+export const getPublicStats = () => api.get('/public/stats');
+export const getFeaturedLibros = () => api.get('/public/featured-libros');
+
 export const getStatsAdmin = () => api.get('/stats');
+export const getStatsBibliotecario = () => api.get('/stats/bibliotecario');
 export const getStatsUsuario = () => api.get('/stats/me');
 
 export const getUsuarios = () => api.get('/usuarios');

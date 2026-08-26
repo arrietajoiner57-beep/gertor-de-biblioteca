@@ -34,4 +34,12 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-module.exports = { verifyToken, requireAdmin };
+function requireBibliotecario(req, res, next) {
+  const rolesPermitidos = ['admin', 'bibliotecario'];
+  if (!rolesPermitidos.includes(req.usuario.rol)) {
+    return res.status(403).json({ message: 'No tienes permisos para realizar esta acción.', code: 'SIN_PERMISOS' });
+  }
+  next();
+}
+
+module.exports = { verifyToken, requireAdmin, requireBibliotecario };

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { login as loginApi, getMe, TOKEN_KEY, USUARIO_KEY } from '../services/api';
+import { login as loginApi, register as registerApi, getMe, TOKEN_KEY, USUARIO_KEY } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -14,7 +14,6 @@ export function AuthProvider({ children }) {
   });
   const [cargando, setCargando] = useState(!!localStorage.getItem(TOKEN_KEY));
 
-  // Verifica con el backend que el token guardado siga siendo válido
   useEffect(() => {
     if (!token) {
       setCargando(false);
@@ -62,6 +61,18 @@ export function AuthProvider({ children }) {
     return nuevoUsuario;
   }
 
+  async function registrar(datos) {
+    const response = await registerApi(datos);
+    const { token: nuevoToken, usuario: nuevoUsuario } = response.data;
+
+    localStorage.setItem(TOKEN_KEY, nuevoToken);
+    localStorage.setItem(USUARIO_KEY, JSON.stringify(nuevoUsuario));
+    setToken(nuevoToken);
+    setUsuario(nuevoUsuario);
+
+    return nuevoUsuario;
+  }
+
   function cerrarSesion() {
     cerrarSesionSilenciosa();
   }
@@ -77,7 +88,12 @@ export function AuthProvider({ children }) {
     cargando,
     autenticado: !!token && !!usuario,
     esAdmin: usuario ? usuario.rol === 'admin' : false,
+    esBibliotecario: usuario ? usuario.rol === 'bibliotecario' : false,
+    esUsuario: usuario ? usuario.rol === 'user' : false,
+    puedeGestionarCatalogo: usuario ? ['admin', 'bibliotecario'].includes(usuario.rol) : false,
+    puedeGestionarPrestamos: usuario ? ['admin', 'bibliotecario'].includes(usuario.rol) : false,
     iniciarSesion,
+    registrar,
     cerrarSesion,
     actualizarPerfil
   };

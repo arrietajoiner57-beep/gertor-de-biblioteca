@@ -37,7 +37,7 @@ const Libros = () => {
   const [cantidadSolicitar, setCantidadSolicitar] = useState(1);
   const [errorSolicitar, setErrorSolicitar] = useState('');
   const [formData, setFormData] = useState(LIBRO_VACIO);
-  const { esAdmin } = useAuth();
+  const { puedeGestionarCatalogo } = useAuth();
 
   const columns = [
     { key: 'id', label: 'ID' },
@@ -190,13 +190,13 @@ const Libros = () => {
         <div>
           <h1 className={styles.title}>Libros</h1>
           <p className={styles.subtitle}>
-            {esAdmin ? 'Catálogo de libros de la biblioteca' : 'Catálogo de libros disponibles'}
+            {puedeGestionarCatalogo ? 'Catalogo de libros de la biblioteca' : 'Catalogo de libros disponibles'}
           </p>
         </div>
-        {esAdmin && (
-          <button className={styles.addBtn} onClick={() => handleOpenModal()}>
-            + Nuevo Libro
-          </button>
+          {puedeGestionarCatalogo && (
+            <button className={styles.addBtn} onClick={() => handleOpenModal()}>
+              + Nuevo Libro
+            </button>
         )}
       </div>
 
@@ -212,12 +212,12 @@ const Libros = () => {
         columns={columns}
         data={librosFiltrados}
         onView={verDetalle}
-        onEdit={esAdmin ? handleOpenModal : undefined}
-        onDelete={esAdmin ? handleDelete : undefined}
+        onEdit={puedeGestionarCatalogo ? handleOpenModal : undefined}
+        onDelete={puedeGestionarCatalogo ? handleDelete : undefined}
         editLabel="Editar"
-        showDeleteFor={(row) => row.cantidad_disponible >= 0}
+        showDeleteFor={puedeGestionarCatalogo ? (row) => row.cantidad_disponible >= 0 : undefined}
         customActions={
-          !esAdmin
+          !puedeGestionarCatalogo
             ? (row) =>
                 row.cantidad_disponible > 0 ? (
                   <button

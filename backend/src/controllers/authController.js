@@ -5,6 +5,8 @@ const Usuario = require('../models/Usuario');
 const SECRET = process.env.JWT_SECRET || 'secreto-desarrollo-cambiar';
 const EXPIRA = process.env.TOKEN_EXPIRA_EN || '8h';
 
+const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function generarToken(usuario) {
   return jwt.sign(
     { id: usuario.id, email: usuario.email, rol: usuario.rol },
@@ -49,6 +51,59 @@ const authController = {
       });
     } catch (error) {
       res.status(500).json({ message: 'No se pudo iniciar sesión. Intenta nuevamente.' });
+    }
+  },
+
+  register: async (req, res) => {
+    try {
+      const { nombre, email, contrasena, telefono, direccion } = req.body;
+
+      if (!nombre || !email || !contrasena) {
+        return res.status(400).json({ message: 'Nombre, correo y contraseña son obligatorios' });
+      }
+
+      if (!EMAIL_VALIDO.test(email)) {
+        return res.status(400).json({ message: 'El correo electrónico no es válido' });
+      }
+
+      if (contrasena.length < 6) {
+        return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres' });
+      }
+
+      const existe = await Usuario.findByEmail(email.trim().toLowerCase());
+      if (existe) {
+        return res.status(400).json({ message: 'Ya existe un usuario registrado con ese correo' });
+      }
+
+      const hash = await bcrypt.hash(contrasena, 10);
+
+      const nuevo = await Usuario.create({
+        nombre: nombre.trim(),
+        email: email.trim().toLowerCase(),
+        telefono: telefono || null,
+        direccion: direccion || null,
+        contrasena: hash,
+        rol: 'user'
+      });
+
+      const token = generarToken(nuevo);
+
+      res.status(201).json({
+        token,
+        usuario: {
+          id: nuevo.id,
+          nombre: nuevo.nombre,
+          email: nuevo.email,
+          telefono: nuevo.telefono,
+          direccion: nuevo.direccion,
+          rol: nuevo.rol
+        }
+      });
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        return res.status(400).json({ message: 'Ya existe un usuario registrado con ese correo' });
+      }
+      res.status(500).json({ message: 'No se pudo registrar el usuario. Intenta nuevamente.' });
     }
   },
 

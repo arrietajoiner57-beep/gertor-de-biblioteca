@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const Usuario = require('../models/Usuario');
 
 const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ROLES_VALIDOS = ['admin', 'user', 'bibliotecario'];
 
 function sanitizeUsuario(data) {
   const clean = { ...data };
@@ -50,7 +51,12 @@ const usuarioController = {
         return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres' });
       }
 
-      const rolFinal = rol === 'admin' ? 'admin' : 'user';
+      let rolFinal = ROLES_VALIDOS.includes(rol) ? rol : 'user';
+
+      if (rolFinal === 'admin' && req.usuario.rol !== 'admin') {
+        rolFinal = 'user';
+      }
+
       const existe = await Usuario.findByEmail(email.trim().toLowerCase());
       if (existe) {
         return res.status(400).json({ message: 'Ya existe un usuario registrado con ese correo' });
@@ -100,10 +106,19 @@ const usuarioController = {
       }
 
       if (rol !== undefined) {
-        if (Number(req.params.id) === req.usuario.id && rol !== 'admin') {
-          return res.status(400).json({ message: 'No puedes quitarte tu propio rol de administrador' });
+        if (!ROLES_VALIDOS.includes(rol)) {
+          return res.status(400).json({ message: 'El rol especificado no es válido' });
         }
-        datos.rol = rol === 'admin' ? 'admin' : 'user';
+
+        if (Number(req.params.id) === req.usuario.id && rol !== req.usuario.rol) {
+          return res.status(400).json({ message: 'No puedes cambiar tu propio rol' });
+        }
+
+        if (rol === 'admin' && req.usuario.rol !== 'admin') {
+          return res.status(403).json({ message: 'Solo un administrador puede asignar el rol de administrador' });
+        }
+
+        datos.rol = rol;
       }
 
       if (contrasena) {

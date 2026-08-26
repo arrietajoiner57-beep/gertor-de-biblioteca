@@ -8,7 +8,9 @@ const COLORES = {
   pendiente: styles.naranja,
   disponible: styles.verde,
   agotado: styles.rojo,
-  admin: styles.amarillo
+  admin: styles.dorado,
+  bibliotecario: styles.esmeralda,
+  user: styles.azul
 };
 
 const ETIQUETAS = {
@@ -19,6 +21,7 @@ const ETIQUETAS = {
   disponible: 'Disponible',
   agotado: 'Agotado',
   admin: 'Administrador',
+  bibliotecario: 'Bibliotecario',
   user: 'Usuario'
 };
 

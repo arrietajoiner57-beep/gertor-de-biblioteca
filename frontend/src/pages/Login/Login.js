@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { mensajeError } from '../../services/api';
 import styles from './Login.module.css';
@@ -14,10 +14,10 @@ const Login = () => {
   const [searchParams] = useSearchParams();
 
   const expirada = searchParams.get('expirada') === '1';
-  const destino = (location.state && location.state.desde && location.state.desde.pathname) || null;
+  const destino = (location.state && location.state.desde && location.state.desde.pathname) || '/app';
 
   if (autenticado) {
-    navigate(destino || '/', { replace: true });
+    navigate(destino || '/app', { replace: true });
   }
 
   const handleChange = (e) => {
@@ -32,9 +32,9 @@ const Login = () => {
 
     try {
       await iniciarSesion(formData.email, formData.contrasena);
-      navigate(destino || '/', { replace: true });
+      navigate(destino || '/app', { replace: true });
     } catch (err) {
-      setError(mensajeError(err, 'No se pudo iniciar sesión. Intenta nuevamente.'));
+      setError(mensajeError(err, 'No se pudo iniciar sesion. Intenta nuevamente.'));
     } finally {
       setCargando(false);
     }
@@ -44,14 +44,19 @@ const Login = () => {
     <div className={styles.fondo}>
       <div className={styles.tarjeta}>
         <div className={styles.logo}>
-          <span className={styles.logoIcono}>📚</span>
+          <span className={styles.logoIcono}>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+          </span>
           <h1>Biblioteca</h1>
-          <p>Sistema de gestión de biblioteca</p>
+          <p>Inicia sesion para continuar</p>
         </div>
 
         {expirada && (
           <div className={`${styles.alerta} ${styles.alertaInfo}`}>
-            Tu sesión ha expirado. Inicia sesión nuevamente.
+            Tu sesion ha expirado. Inicia sesion nuevamente.
           </div>
         )}
 
@@ -63,7 +68,7 @@ const Login = () => {
 
         <form onSubmit={handleSubmit}>
           <div className={styles.campo}>
-            <label htmlFor="email">Correo electrónico</label>
+            <label htmlFor="email">Correo electronico</label>
             <input
               id="email"
               type="email"
@@ -77,7 +82,7 @@ const Login = () => {
           </div>
 
           <div className={styles.campo}>
-            <label htmlFor="contrasena">Contraseña</label>
+            <label htmlFor="contrasena">Contrasena</label>
             <input
               id="contrasena"
               type="password"
@@ -91,9 +96,17 @@ const Login = () => {
           </div>
 
           <button type="submit" className={styles.botonEntrar} disabled={cargando}>
-            {cargando ? 'Ingresando...' : 'Iniciar sesión'}
+            {cargando ? 'Ingresando...' : 'Iniciar sesion'}
           </button>
         </form>
+
+        <div className={styles.footer}>
+          <p>
+            ¿No tienes cuenta?{' '}
+            <Link to="/registro" className={styles.link}>Registrate aqui</Link>
+          </p>
+          <Link to="/" className={styles.volverLink}>Volver al inicio</Link>
+        </div>
       </div>
     </div>
   );

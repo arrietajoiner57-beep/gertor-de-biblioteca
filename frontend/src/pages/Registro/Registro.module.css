@@ -13,7 +13,7 @@
   box-shadow: var(--shadow-xl);
   padding: 40px;
   width: 100%;
-  max-width: 420px;
+  max-width: 520px;
 }
 
 .logo {
@@ -53,27 +53,27 @@
   border: 1px solid #fecaca;
 }
 
-.alertaInfo {
-  background: var(--color-info-light);
-  color: #1d4ed8;
-  border: 1px solid #bfdbfe;
+.campo {
+  margin-bottom: 18px;
+  flex: 1;
 }
 
-.campo {
-  margin-bottom: 20px;
+.campoRow {
+  display: flex;
+  gap: 14px;
 }
 
 .campo label {
   display: block;
-  margin-bottom: 7px;
+  margin-bottom: 6px;
   font-weight: 600;
   color: var(--color-text);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .campo input {
   width: 100%;
-  padding: 12px 14px;
+  padding: 11px 14px;
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-sm);
   font-size: 0.95rem;
@@ -93,7 +93,7 @@
   color: var(--color-text-muted);
 }
 
-.botonEntrar {
+.botonRegistrar {
   width: 100%;
   background: var(--color-accent);
   color: var(--color-primary);
@@ -104,15 +104,16 @@
   font-weight: 700;
   cursor: pointer;
   transition: all var(--transition);
+  margin-top: 6px;
 }
 
-.botonEntrar:hover:not(:disabled) {
+.botonRegistrar:hover:not(:disabled) {
   background: var(--color-accent-hover);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px var(--color-accent-glow);
 }
 
-.botonEntrar:disabled {
+.botonRegistrar:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
@@ -151,4 +152,15 @@
 
 .volverLink:hover {
   color: var(--color-text);
+}
+
+@media (max-width: 500px) {
+  .tarjeta {
+    padding: 28px 20px;
+  }
+
+  .campoRow {
+    flex-direction: column;
+    gap: 0;
+  }
 }

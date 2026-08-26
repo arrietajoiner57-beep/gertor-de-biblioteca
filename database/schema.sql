@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     telefono VARCHAR(20),
     direccion VARCHAR(200),
     contrasena VARCHAR(255) NOT NULL,
-    rol ENUM('admin', 'user') NOT NULL DEFAULT 'user',
+    rol ENUM('admin', 'user', 'bibliotecario') NOT NULL DEFAULT 'user',
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

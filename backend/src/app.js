@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const pool = require('./config/db');
-const { verifyToken, requireAdmin } = require('./middleware/auth');
+const { verifyToken, requireAdmin, requireBibliotecario } = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -15,7 +15,43 @@ app.use('/api/usuarios', require('./routes/usuarioRoutes'));
 app.use('/api/libros', require('./routes/libroRoutes'));
 app.use('/api/prestamos', require('./routes/prestamoRoutes'));
 
+// ============================================
+// Endpoints Públicos (sin autenticación)
+// ============================================
+
+app.get('/api/public/stats', async (req, res) => {
+  try {
+    const [libros] = await pool.query('SELECT COUNT(*) as total FROM libros');
+    const [disponibles] = await pool.query('SELECT COALESCE(SUM(cantidad_disponible),0) as total FROM libros');
+    const [generos] = await pool.query('SELECT COUNT(DISTINCT genero) as total FROM libros WHERE genero IS NOT NULL AND genero != ""');
+    const [prestamos] = await pool.query("SELECT COUNT(*) as total FROM prestamo WHERE estado IN ('activo', 'pendiente')");
+
+    res.json({
+      totalLibros: libros[0].total,
+      librosDisponibles: Number(disponibles[0].total),
+      totalGeneros: generos[0].total,
+      prestamosActivos: prestamos[0].total
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'No se pudieron obtener las estadísticas' });
+  }
+});
+
+app.get('/api/public/featured-libros', async (req, res) => {
+  try {
+    const [libros] = await pool.query(
+      'SELECT id, titulo, autor, genero, editorial, cantidad_disponible FROM libros ORDER BY id DESC LIMIT 6'
+    );
+    res.json(libros);
+  } catch (error) {
+    res.status(500).json({ message: 'No se pudieron obtener los libros destacados' });
+  }
+});
+
+// ============================================
 // Dashboard del administrador
+// ============================================
+
 app.get('/api/stats', verifyToken, requireAdmin, async (req, res) => {
   try {
     const [usuarios] = await pool.query('SELECT COUNT(*) as total FROM usuario');
@@ -57,7 +93,53 @@ app.get('/api/stats', verifyToken, requireAdmin, async (req, res) => {
   }
 });
 
+// ============================================
+// Dashboard del bibliotecario
+// ============================================
+
+app.get('/api/stats/bibliotecario', verifyToken, requireBibliotecario, async (req, res) => {
+  try {
+    const [libros] = await pool.query('SELECT COUNT(*) as total, COALESCE(SUM(cantidad_disponible),0) as disponibles FROM libros');
+    const [prestados] = await pool.query(`
+      SELECT COALESCE(SUM(dp.cantidad),0) as total
+      FROM prestamo p INNER JOIN detalle_prestamo dp ON p.id = dp.prestamo_id
+      WHERE p.estado = 'activo'
+    `);
+    const [activos] = await pool.query("SELECT COUNT(*) as total FROM prestamo WHERE estado = 'activo' AND fecha_devolucion >= CURDATE()");
+    const [vencidos] = await pool.query("SELECT COUNT(*) as total FROM prestamo WHERE estado = 'activo' AND fecha_devolucion < CURDATE()");
+    const [pendientes] = await pool.query("SELECT COUNT(*) as total FROM prestamo WHERE estado = 'pendiente'");
+    const [devueltos] = await pool.query("SELECT COUNT(*) as total FROM prestamo WHERE estado = 'devuelto'");
+    const [ultimosPrestamos] = await pool.query(`
+      SELECT p.id, p.fecha_prestamo, p.fecha_devolucion,
+        CASE WHEN p.estado = 'activo' AND p.fecha_devolucion < CURDATE() THEN 'vencido' ELSE p.estado END AS estado,
+        u.nombre AS nombre_usuario
+      FROM prestamo p INNER JOIN usuario u ON p.usuario_id = u.id
+      ORDER BY p.id DESC LIMIT 5
+    `);
+    const [ultimosLibros] = await pool.query('SELECT id, titulo, autor, cantidad_disponible FROM libros ORDER BY id DESC LIMIT 5');
+
+    res.json({
+      totalLibros: libros[0].total,
+      librosDisponibles: Number(libros[0].disponibles),
+      librosPrestados: Number(prestados[0].total),
+      prestamosActivos: activos[0].total,
+      prestamosVencidos: vencidos[0].total,
+      prestamosPendientes: pendientes[0].total,
+      prestamosDevueltos: devueltos[0].total,
+      recientes: {
+        prestamos: ultimosPrestamos,
+        libros: ultimosLibros
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'No se pudieron obtener las estadísticas' });
+  }
+});
+
+// ============================================
 // Dashboard del usuario normal (solo sus datos)
+// ============================================
+
 app.get('/api/stats/me', verifyToken, async (req, res) => {
   try {
     const id = req.usuario.id;
