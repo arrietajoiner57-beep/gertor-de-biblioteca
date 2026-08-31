@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { getPublicStats, getFeaturedLibros } from '../../services/api';
+import BookCover from '../../components/BookCover/BookCover';
 import styles from './Landing.module.css';
 
 const Landing = () => {
@@ -113,11 +114,8 @@ const Landing = () => {
           <div className={styles.booksGrid}>
             {libros.map((libro) => (
               <div key={libro.id} className={styles.bookCard}>
-                <div className={styles.bookCover}>
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                  </svg>
+                <div className={styles.bookCoverWrap}>
+                  <BookCover portada={libro.portada} titulo={libro.titulo} size="md" />
                 </div>
                 <div className={styles.bookInfo}>
                   <h3 className={styles.bookTitle}>{libro.titulo}</h3>

@@ -1,0 +1,58 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: biblioteca-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass123
+      MYSQL_DATABASE: biblioteca
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      # Inicializacion automatica la primera vez (orden alfabetico)
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/migration_pendiente_status.sql:/docker-entrypoint-initdb.d/02-estado_pendiente.sql:ro
+      - ./database/seed_wow.sql:/docker-entrypoint-initdb.d/03-seed_wow.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpass123"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: ./backend
+    container_name: biblioteca-backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: rootpass123
+      DB_PORT: 3306
+      DB_NAME: biblioteca
+      PORT: 4000
+      JWT_SECRET: biblioteca-secreto-para-competencia
+      TOKEN_EXPIRA_EN: 8h
+      ADMIN_NOMBRE: Administrador
+      ADMIN_EMAIL: admin@biblioteca.com
+      ADMIN_CONTRASENA: admin123
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    # socket.io necesita exponer el puerto 4000 (ya arriba)
+
+  frontend:
+    build: ./frontend
+    container_name: biblioteca-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  db_data:

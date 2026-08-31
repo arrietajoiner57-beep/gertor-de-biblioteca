@@ -1,0 +1,89 @@
+.container {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 360px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #fff;
+  color: #1f2430;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  border-left: 4px solid #9096a3;
+  font-size: 0.9rem;
+  animation: entrar 0.25s ease;
+}
+
+.icono {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.mensaje {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.cerrar {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: #9096a3;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.cerrar:hover {
+  color: #1f2430;
+}
+
+.exito {
+  border-left-color: #0f9d58;
+}
+.exito .icono {
+  background: #0f9d58;
+}
+
+.error {
+  border-left-color: #d93025;
+}
+.error .icono {
+  background: #d93025;
+}
+
+.info {
+  border-left-color: #3b82f6;
+}
+.info .icono {
+  background: #3b82f6;
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

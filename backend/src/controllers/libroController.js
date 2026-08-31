@@ -14,7 +14,7 @@ function sanitizeLibro(data) {
 const libroController = {
   getAll: async (req, res) => {
     try {
-      const libros = await Libro.getAll();
+      const libros = await Libro.getAll({ q: req.query.q });
       res.json(libros);
     } catch (error) {
       res.status(500).json({ message: 'Error al obtener libros', error: error.message });

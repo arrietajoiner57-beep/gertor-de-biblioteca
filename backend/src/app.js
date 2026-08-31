@@ -1,11 +1,16 @@
 require('dotenv').config();
+const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const pool = require('./config/db');
 const { verifyToken, requireAdmin, requireBibliotecario } = require('./middleware/auth');
+const { iniciarSocket } = require('./config/socket');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+const server = http.createServer(app);
+iniciarSocket(server);
 
 app.use(cors());
 app.use(express.json());
@@ -14,6 +19,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/usuarios', require('./routes/usuarioRoutes'));
 app.use('/api/libros', require('./routes/libroRoutes'));
 app.use('/api/prestamos', require('./routes/prestamoRoutes'));
+app.use('/api/reportes', require('./routes/reporteRoutes'));
 
 // ============================================
 // Endpoints Públicos (sin autenticación)
@@ -40,7 +46,7 @@ app.get('/api/public/stats', async (req, res) => {
 app.get('/api/public/featured-libros', async (req, res) => {
   try {
     const [libros] = await pool.query(
-      'SELECT id, titulo, autor, genero, editorial, cantidad_disponible FROM libros ORDER BY id DESC LIMIT 6'
+      'SELECT id, titulo, autor, genero, editorial, cantidad_disponible, portada FROM libros ORDER BY id DESC LIMIT 6'
     );
     res.json(libros);
   } catch (error) {
@@ -195,9 +201,10 @@ async function start() {
   try {
     await pool.query('SELECT 1');
     console.log('Conexión a MySQL establecida');
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
       console.log(`API disponible en http://localhost:${PORT}/api`);
+      console.log(`Socket.IO activo`);
     });
   } catch (error) {
     console.error('No se pudo conectar a MySQL:', error.message);

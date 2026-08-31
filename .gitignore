@@ -1,0 +1,23 @@
+# Dependencias
+node_modules/
+
+# Entorno (secretos) - no versionar
+.env
+.env.*
+!.env.example
+backend/.env
+
+# Build
+dist/
+build/
+
+# Pruebas / cobertura
+coverage/
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+*.log
+
+# Base de datos local
+database/*.sql.bak

@@ -242,3 +242,54 @@
   color: var(--color-text-secondary);
   padding: 40px;
 }
+
+.graficoVacio {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: 60px 0;
+}
+
+/* ===== Skeleton (shimmer) ===== */
+.skeleton {
+  background: linear-gradient(90deg, #eef1f5 25%, #e2e7ee 37%, #eef1f5 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: var(--radius);
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+.skeletonCard {
+  height: 120px;
+}
+
+.skeletonIcon {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.skeletonNum {
+  width: 80px;
+  height: 30px;
+  margin-bottom: 8px;
+}
+
+.skeletonText {
+  width: 140px;
+  height: 14px;
+}
+
+.skeletonBar {
+  width: 180px;
+  height: 18px;
+  margin-bottom: 20px;
+}
+
+.skeletonBlock {
+  width: 100%;
+  height: 220px;
+}

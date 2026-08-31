@@ -2,11 +2,121 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getStatsAdmin, getStatsBibliotecario, getStatsUsuario } from '../../services/api';
 import Badge from '../../components/Badge/Badge';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Cell,
+  PieChart,
+  Pie,
+  Legend
+} from 'recharts';
 import styles from './Inicio.module.css';
 
 function formatearFecha(valor) {
   if (!valor) return '-';
   return valor.split(' ')[0];
+}
+
+const DashboardSkeleton = () => {
+  return (
+    <>
+      <div className={styles.cards}>
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className={`${styles.card} ${styles.skeletonCard}`}>
+            <div className={`${styles.skeleton} ${styles.skeletonIcon}`} />
+            <div className={styles.cardInfo}>
+              <div className={`${styles.skeleton} ${styles.skeletonNum}`} />
+              <div className={`${styles.skeleton} ${styles.skeletonText}`} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className={styles.secciones}>
+        <div className={styles.seccion}>
+          <div className={`${styles.skeleton} ${styles.skeletonBar}`} />
+          <div className={`${styles.skeleton} ${styles.skeletonBlock}`} />
+        </div>
+        <div className={styles.seccion}>
+          <div className={`${styles.skeleton} ${styles.skeletonBar}`} />
+          <div className={`${styles.skeleton} ${styles.skeletonBlock}`} />
+        </div>
+      </div>
+    </>
+  );
+};
+
+function GraficoEstadoPrestamos({ datos }) {
+  const dataColors = [
+    { key: 'prestamosActivos', label: 'Activos', color: '#3b82f6' },
+    { key: 'prestamosPendientes', label: 'Pendientes', color: '#f59e0b' },
+    { key: 'prestamosVencidos', label: 'Vencidos', color: '#ef4444' },
+    { key: 'prestamosDevueltos', label: 'Devueltos', color: '#10b981' }
+  ].filter((d) => d.key in datos);
+
+  const chartData = [{
+    name: 'Prestamos',
+    ...Object.fromEntries(dataColors.map((d) => [d.label, Number(datos[d.key]) || 0]))
+  }];
+
+  const colors = Object.fromEntries(dataColors.map((d) => [d.label, d.color]));
+
+  return (
+    <ResponsiveContainer width="100%" height={260}>
+      <BarChart data={chartData} barSize={44}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+        <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
+        <YAxis allowDecimals={false} tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} width={24} />
+        <Tooltip
+          cursor={{ fill: 'rgba(201,168,76,0.08)' }}
+          contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 13 }}
+        />
+        <Legend />
+        {dataColors.map((d) => (
+          <Bar key={d.label} dataKey={d.label} fill={colors[d.label]} radius={[6, 6, 0, 0]} />
+        ))}
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+function GraficoLibros({ disponibles, prestados }) {
+  const data = [
+    { name: 'Disponibles', value: Number(disponibles) || 0, color: '#10b981' },
+    { name: 'Prestados', value: Number(prestados) || 0, color: '#c9a84c' }
+  ].filter((d) => d.value > 0);
+
+  if (data.length === 0) {
+    return <p className={styles.graficoVacio}>Sin datos suficientes para mostrar</p>;
+  }
+
+  return (
+    <ResponsiveContainer width="100%" height={260}>
+      <PieChart>
+        <Pie
+          data={data}
+          dataKey="value"
+          nameKey="name"
+          cx="50%"
+          cy="50%"
+          innerRadius={60}
+          outerRadius={90}
+          paddingAngle={4}
+          stroke="none"
+        >
+          {data.map((entry) => (
+            <Cell key={entry.name} fill={entry.color} />
+          ))}
+        </Pie>
+        <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 13 }} />
+        <Legend />
+      </PieChart>
+    </ResponsiveContainer>
+  );
 }
 
 const DashboardAdmin = () => {
@@ -20,14 +130,14 @@ const DashboardAdmin = () => {
   }, []);
 
   if (error) return <p className={styles.errorMsg}>{error}</p>;
-  if (!stats) return <p className={styles.cargando}>Cargando...</p>;
+  if (!stats) return <DashboardSkeleton />;
 
-  const totalPrestamos = stats.prestamosActivos + stats.prestamosVencidos + stats.prestamosDevueltos || 1;
-  const barras = [
-    { etiqueta: 'Activos', valor: stats.prestamosActivos, color: 'var(--color-info)' },
-    { etiqueta: 'Vencidos', valor: stats.prestamosVencidos, color: 'var(--color-danger)' },
-    { etiqueta: 'Devueltos', valor: stats.prestamosDevueltos, color: 'var(--color-success)' }
-  ];
+  const datosPrestamos = {
+    prestamosActivos: stats.prestamosActivos,
+    prestamosPendientes: 0,
+    prestamosVencidos: stats.prestamosVencidos,
+    prestamosDevueltos: stats.prestamosDevueltos
+  };
 
   return (
     <>
@@ -85,66 +195,21 @@ const DashboardAdmin = () => {
             <p>Ejemplares Prestados</p>
           </div>
         </div>
-
-        <div className={`${styles.card} ${styles.cardActivos}`}>
-          <div className={styles.cardIcon}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/>
-            </svg>
-          </div>
-          <div className={styles.cardInfo}>
-            <h3>{stats.prestamosActivos}</h3>
-            <p>Prestamos Activos</p>
-          </div>
-        </div>
-
-        <div className={`${styles.card} ${styles.cardVencidos}`}>
-          <div className={styles.cardIcon}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="12"/>
-              <line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
-          </div>
-          <div className={styles.cardInfo}>
-            <h3>{stats.prestamosVencidos}</h3>
-            <p>Prestamos Vencidos</p>
-          </div>
-        </div>
-
-        <div className={`${styles.card} ${styles.cardDevueltos}`}>
-          <div className={styles.cardIcon}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-          </div>
-          <div className={styles.cardInfo}>
-            <h3>{stats.prestamosDevueltos}</h3>
-            <p>Prestamos Devueltos</p>
-          </div>
-        </div>
       </div>
 
       <div className={styles.secciones}>
         <div className={styles.seccion}>
           <h2>Estado de los prestamos</h2>
-          {barras.map((b) => (
-            <div key={b.etiqueta} className={styles.barraFila}>
-              <span className={styles.barraEtiqueta}>{b.etiqueta}</span>
-              <div className={styles.barraPista}>
-                <div
-                  className={styles.barraRelleno}
-                  style={{ width: `${Math.round((b.valor / totalPrestamos) * 100)}%`, background: b.color }}
-                />
-              </div>
-              <span className={styles.barraValor}>{b.valor}</span>
-            </div>
-          ))}
+          <GraficoEstadoPrestamos datos={datosPrestamos} />
         </div>
 
+        <div className={styles.seccion}>
+          <h2>Distribucion de ejemplares</h2>
+          <GraficoLibros disponibles={stats.librosDisponibles} prestados={stats.librosPrestados} />
+        </div>
+      </div>
+
+      <div className={styles.secciones}>
         <div className={styles.seccion}>
           <h2>Ultimos prestamos</h2>
           <ul className={styles.listaReciente}>
@@ -202,15 +267,14 @@ const DashboardBibliotecario = () => {
   }, []);
 
   if (error) return <p className={styles.errorMsg}>{error}</p>;
-  if (!stats) return <p className={styles.cargando}>Cargando...</p>;
+  if (!stats) return <DashboardSkeleton />;
 
-  const totalPrestamos = stats.prestamosActivos + stats.prestamosVencidos + stats.prestamosDevueltos + stats.prestamosPendientes || 1;
-  const barras = [
-    { etiqueta: 'Activos', valor: stats.prestamosActivos, color: 'var(--color-info)' },
-    { etiqueta: 'Pendientes', valor: stats.prestamosPendientes, color: 'var(--color-warning)' },
-    { etiqueta: 'Vencidos', valor: stats.prestamosVencidos, color: 'var(--color-danger)' },
-    { etiqueta: 'Devueltos', valor: stats.prestamosDevueltos, color: 'var(--color-success)' }
-  ];
+  const datosPrestamos = {
+    prestamosActivos: stats.prestamosActivos,
+    prestamosPendientes: stats.prestamosPendientes,
+    prestamosVencidos: stats.prestamosVencidos,
+    prestamosDevueltos: stats.prestamosDevueltos
+  };
 
   return (
     <>
@@ -271,20 +335,16 @@ const DashboardBibliotecario = () => {
       <div className={styles.secciones}>
         <div className={styles.seccion}>
           <h2>Estado de los prestamos</h2>
-          {barras.map((b) => (
-            <div key={b.etiqueta} className={styles.barraFila}>
-              <span className={styles.barraEtiqueta}>{b.etiqueta}</span>
-              <div className={styles.barraPista}>
-                <div
-                  className={styles.barraRelleno}
-                  style={{ width: `${Math.round((b.valor / totalPrestamos) * 100)}%`, background: b.color }}
-                />
-              </div>
-              <span className={styles.barraValor}>{b.valor}</span>
-            </div>
-          ))}
+          <GraficoEstadoPrestamos datos={datosPrestamos} />
         </div>
 
+        <div className={styles.seccion}>
+          <h2>Distribucion de ejemplares</h2>
+          <GraficoLibros disponibles={stats.librosDisponibles} prestados={stats.librosPrestados} />
+        </div>
+      </div>
+
+      <div className={styles.secciones}>
         <div className={styles.seccion}>
           <h2>Ultimos prestamos</h2>
           <ul className={styles.listaReciente}>
@@ -330,7 +390,7 @@ const DashboardUsuario = () => {
   }, []);
 
   if (error) return <p className={styles.errorMsg}>{error}</p>;
-  if (!stats) return <p className={styles.cargando}>Cargando...</p>;
+  if (!stats) return <DashboardSkeleton />;
 
   return (
     <>

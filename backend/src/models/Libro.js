@@ -1,8 +1,13 @@
 const pool = require('../config/db');
+const { construirBusqueda } = require('../utils/libroQuery');
 
 const Libro = {
-  getAll: async () => {
-    const [rows] = await pool.query('SELECT * FROM libros ORDER BY id DESC');
+  getAll: async ({ q } = {}) => {
+    const { clausula, params } = construirBusqueda(q);
+    const [rows] = await pool.query(
+      `SELECT * FROM libros ${clausula} ORDER BY id DESC`,
+      params
+    );
     return rows;
   },
 

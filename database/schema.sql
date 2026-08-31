@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS libros (
     editorial VARCHAR(100),
     anio_publicacion SMALLINT,
     genero VARCHAR(50),
-    cantidad_disponible INT NOT NULL DEFAULT 1
+    cantidad_disponible INT NOT NULL DEFAULT 1,
+    portada VARCHAR(500)
 );
 
 -- ============================================

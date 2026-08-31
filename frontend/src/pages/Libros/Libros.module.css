@@ -7,6 +7,15 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 28px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.headerAcciones {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .title {
@@ -105,6 +114,31 @@
 
 .detalleGrid strong {
   color: var(--color-text);
+}
+
+.detalleWrap {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.detallePortada {
+  flex-shrink: 0;
+}
+
+.detalleGrid {
+  flex: 1;
+}
+
+.portadaPreview {
+  margin-top: 10px;
+}
+
+@media (max-width: 500px) {
+  .detalleWrap {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 .formRow {

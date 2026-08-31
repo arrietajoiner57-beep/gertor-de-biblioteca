@@ -1,6 +1,7 @@
 const Prestamo = require('../models/Prestamo');
 const DetallePrestamo = require('../models/DetallePrestamo');
 const Libro = require('../models/Libro');
+const { notificarSolicitud, notificarUsuario } = require('../config/socket');
 
 function esFechaValida(valor) {
   return /^\d{4}-\d{2}-\d{2}$/.test(valor) && !isNaN(Date.parse(valor));
@@ -183,6 +184,16 @@ const prestamoController = {
 
       await Prestamo.update(req.params.id, { estado: 'devuelto' });
 
+      const prestamoDevuelto = await Prestamo.getById(req.params.id);
+      if (prestamoDevuelto) {
+        notificarUsuario({
+          usuarioId: prestamoDevuelto.usuario_id,
+          prestamoId: prestamoDevuelto.id,
+          tipo: 'devuelto',
+          mensaje: 'Tus libros fueron devueltos correctamente. ¡Gracias!'
+        });
+      }
+
       res.json({ message: 'Libros devueltos correctamente' });
     } catch (error) {
       res.status(500).json({ message: 'No se pudo registrar la devolución' });
@@ -230,6 +241,12 @@ const prestamoController = {
         cantidad: cant
       });
 
+      notificarSolicitud({
+        prestamoId: prestamo.id,
+        usuarioNombre: req.usuario.email,
+        libroTitulo: libro.titulo
+      });
+
       res.status(201).json({
         message: 'Solicitud de préstamo enviada. Esperando aprobación del administrador.',
         prestamo
@@ -271,6 +288,14 @@ const prestamoController = {
 
       await Prestamo.update(req.params.id, { estado: 'activo' });
 
+      const prestamoAprobado = await Prestamo.getById(req.params.id);
+      notificarUsuario({
+        usuarioId: prestamoAprobado.usuario_id,
+        prestamoId: prestamoAprobado.id,
+        tipo: 'aprobado',
+        mensaje: 'Tu solicitud de préstamo fue aprobada. ¡Recoge tu libro!'
+      });
+
       res.json({ message: 'Préstamo aprobado correctamente' });
     } catch (error) {
       res.status(500).json({ message: 'No se pudo aprobar el préstamo' });
@@ -289,7 +314,17 @@ const prestamoController = {
         return res.status(400).json({ message: 'Solo se pueden rechazar préstamos pendientes' });
       }
 
+      const prestamoRechazado = await Prestamo.getById(req.params.id);
       await Prestamo.delete(req.params.id);
+
+      if (prestamoRechazado) {
+        notificarUsuario({
+          usuarioId: prestamoRechazado.usuario_id,
+          prestamoId: prestamoRechazado.id,
+          tipo: 'rechazado',
+          mensaje: 'Tu solicitud de préstamo fue rechazada.'
+        });
+      }
 
       res.json({ message: 'Solicitud de préstamo rechazada' });
     } catch (error) {

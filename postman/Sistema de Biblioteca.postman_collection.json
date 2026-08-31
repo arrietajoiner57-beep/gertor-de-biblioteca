@@ -1,0 +1,949 @@
+{
+  "info": {
+    "name": "Sistema de Biblioteca",
+    "description": "Colección de endpoints de la API de la biblioteca (React + Express + MySQL). Usa las variables {{baseUrl}} y {{token}} del entorno 'biblioteca'.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Público (sin token)",
+      "item": [
+        {
+          "name": "Health - estado del servidor y BD",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Public Stats - estadísticas del landing",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/public/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "public", "stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Featured Libros - destacados del landing",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/public/featured-libros",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "public", "featured-libros"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Registro de usuario",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ana Pérez\",\n  \"email\": \"ana@mail.com\",\n  \"contrasena\": \"123456\",\n  \"telefono\": \"555-1234\",\n  \"direccion\": \"Calle 1 #2-3\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Login (devuelve token)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@biblioteca.com\",\n  \"contrasena\": \"admin123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Copia el valor de \"token\" de la respuesta y pégalo en la variable {{token}} del entorno 'biblioteca' (menú Environments)."
+          },
+          "response": []
+        },
+        {
+          "name": "Perfil actual (a quien pertenece el token)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar mi contraseña",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contrasena_actual\": \"admin123\",\n  \"contrasena_nueva\": \"nueva123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "password"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Libros",
+      "item": [
+        {
+          "name": "Listar todos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/libros",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "libros"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar por texto (título, autor, ISBN, género, editorial)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/libros?q=harry",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "libros"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "harry"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detalle de un libro",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/libros/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "libros", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear libro (bibliotecario/admin)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Cien años de soledad\",\n  \"autor\": \"Gabriel García Márquez\",\n  \"isbn\": \"9788437604947\",\n  \"editorial\": \"Sudamericana\",\n  \"anio_publicacion\": 1967,\n  \"genero\": \"Novela\",\n  \"cantidad_disponible\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/libros",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "libros"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar libro (bibliotecario/admin)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Cien años de soledad (ed. 50 aniversario)\",\n  \"cantidad_disponible\": 8\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/libros/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "libros", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar libro (bibliotecario/admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/libros/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "libros", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Usuarios (solo admin)",
+      "item": [
+        {
+          "name": "Listar usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuarios"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detalle de usuario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuarios", "2"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear usuario (o asignar rol bibliotecario)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Bibliotecario Juan\",\n  \"email\": \"juan@biblioteca.com\",\n  \"contrasena\": \"123456\",\n  \"rol\": \"bibliotecario\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuarios"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar usuario (rol/telefono/direccion)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rol\": \"user\",\n  \"direccion\": \"Carrera 9 #24-50\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuarios", "2"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuarios", "2"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Préstamos",
+      "item": [
+        {
+          "name": "Listar préstamos filtrados por estado (bibliotecario/admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos?estado=activo",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "prestamos"],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "activo"
+                }
+              ]
+            },
+            "description": "Estados válidos: activo, pendiente, devuelto, vencido."
+          },
+          "response": []
+        },
+        {
+          "name": "Mis préstamos (usuario autenticado)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos/mis",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "prestamos", "mis"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detalle de préstamo (bibliotecario/admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "prestamos", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear préstamo directo (bibliotecario/admin)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario_id\": 2,\n  \"fecha_prestamo\": \"2026-08-29\",\n  \"fecha_devolucion\": \"2026-09-12\",\n  \"libros\": [\n    {\n      \"libro_id\": 1,\n      \"cantidad\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "prestamos"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitar préstamo (usuario; queda pendiente de aprobación)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"libro_id\": 1,\n  \"cantidad\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos/solicitar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "prestamos", "solicitar"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Aprobar préstamo pendiente (bibliotecario/admin)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos/1/aprobar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "prestamos", "1", "aprobar"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Rechazar préstamo pendiente (bibliotecario/admin)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos/1/rechazar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "prestamos", "1", "rechazar"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Registrar devolución (bibliotecario/admin)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos/1/devolver",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "prestamos", "1", "devolver"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar préstamo (bibliotecario/admin)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha_devolucion\": \"2026-09-19\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "prestamos", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar préstamo (bibliotecario/admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "prestamos", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Estadísticas (dashboards)",
+      "item": [
+        {
+          "name": "Stats admin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Stats bibliotecario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stats/bibliotecario",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stats", "bibliotecario"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Stats míos (usuario normal)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stats/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stats", "me"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reportes (Excel / PDF)",
+      "item": [
+        {
+          "name": "Reporte de préstamos (Excel)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reportes/prestamos/excel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reportes", "prestamos", "excel"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reporte de préstamos (PDF)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reportes/prestamos/pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reportes", "prestamos", "pdf"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reporte de usuarios (Excel) - solo admin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reportes/usuarios/excel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reportes", "usuarios", "excel"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reporte de usuarios (PDF) - solo admin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reportes/usuarios/pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reportes", "usuarios", "pdf"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reporte de libros (Excel)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reportes/libros/excel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reportes", "libros", "excel"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reporte de libros (PDF)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reportes/libros/pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reportes", "libros", "pdf"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

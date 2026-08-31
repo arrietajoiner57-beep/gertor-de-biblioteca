@@ -316,12 +316,13 @@
   box-shadow: var(--shadow-lg);
 }
 
-.bookCover {
-  height: 140px;
+.bookCoverWrap {
+  height: 150px;
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 10px 0;
 }
 
 .bookInfo {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Table from '../../components/Table/Table';
 import Modal from '../../components/Modal/Modal';
 import Badge from '../../components/Badge/Badge';
+import ExportButtons from '../../components/ExportButtons/ExportButtons';
 import {
   getUsuarios,
   getUsuario,
@@ -133,9 +134,12 @@ const Usuarios = () => {
           <h1 className={styles.title}>Usuarios</h1>
           <p className={styles.subtitle}>Gestión de usuarios de la biblioteca</p>
         </div>
-        <button className={styles.addBtn} onClick={() => handleOpenModal()}>
-          + Nuevo Usuario
-        </button>
+        <div className={styles.headerAcciones}>
+          <ExportButtons seccion="usuarios" />
+          <button className={styles.addBtn} onClick={() => handleOpenModal()}>
+            + Nuevo Usuario
+          </button>
+        </div>
       </div>
 
       <Table

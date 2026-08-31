@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Table from '../../components/Table/Table';
 import Modal from '../../components/Modal/Modal';
 import Badge from '../../components/Badge/Badge';
+import BookCover from '../../components/BookCover/BookCover';
+import ExportButtons from '../../components/ExportButtons/ExportButtons';
 import { useAuth } from '../../context/AuthContext';
 import {
   getLibros,
@@ -21,7 +23,8 @@ const LIBRO_VACIO = {
   editorial: '',
   anio_publicacion: '',
   genero: '',
-  cantidad_disponible: 1
+  cantidad_disponible: 1,
+  portada: ''
 };
 
 const Libros = () => {
@@ -40,6 +43,12 @@ const Libros = () => {
   const { puedeGestionarCatalogo } = useAuth();
 
   const columns = [
+    {
+      key: 'portada',
+      label: '',
+      width: 60,
+      render: (row) => <BookCover portada={row.portada} titulo={row.titulo} size="sm" />
+    },
     { key: 'id', label: 'ID' },
     { key: 'titulo', label: 'Título' },
     { key: 'autor', label: 'Autor' },
@@ -56,28 +65,21 @@ const Libros = () => {
   ];
 
   useEffect(() => {
-    fetchLibros();
-  }, []);
+    const temporizador = setTimeout(() => {
+      fetchLibros(busqueda);
+    }, 300);
 
-  const fetchLibros = async () => {
+    return () => clearTimeout(temporizador);
+  }, [busqueda]);
+
+  const fetchLibros = async (q = '') => {
     try {
-      const response = await getLibros();
+      const response = await getLibros(q);
       setLibros(response.data);
     } catch (error) {
       console.error('Error al obtener libros:', error);
     }
   };
-
-  const librosFiltrados = libros.filter((l) => {
-    const texto = busqueda.trim().toLowerCase();
-    if (!texto) return true;
-    return (
-      (l.titulo || '').toLowerCase().includes(texto) ||
-      (l.autor || '').toLowerCase().includes(texto) ||
-      (l.genero || '').toLowerCase().includes(texto) ||
-      (l.isbn || '').toLowerCase().includes(texto)
-    );
-  });
 
   const handleOpenModal = (book = null) => {
     setErrorModal('');
@@ -90,7 +92,8 @@ const Libros = () => {
         editorial: book.editorial || '',
         anio_publicacion: book.anio_publicacion || '',
         genero: book.genero || '',
-        cantidad_disponible: book.cantidad_disponible
+        cantidad_disponible: book.cantidad_disponible,
+        portada: book.portada || ''
       });
     } else {
       setCurrentBook(null);
@@ -126,7 +129,7 @@ const Libros = () => {
       } else {
         await createLibro(formData);
       }
-      fetchLibros();
+      fetchLibros(busqueda);
       handleCloseModal();
     } catch (error) {
       setErrorModal(mensajeError(error));
@@ -141,7 +144,7 @@ const Libros = () => {
     try {
       const response = await deleteLibro(id);
       alert(response.data.message);
-      fetchLibros();
+      fetchLibros(busqueda);
     } catch (error) {
       alert(mensajeError(error));
     }
@@ -194,9 +197,12 @@ const Libros = () => {
           </p>
         </div>
           {puedeGestionarCatalogo && (
-            <button className={styles.addBtn} onClick={() => handleOpenModal()}>
-              + Nuevo Libro
-            </button>
+            <div className={styles.headerAcciones}>
+              <ExportButtons seccion="libros" />
+              <button className={styles.addBtn} onClick={() => handleOpenModal()}>
+                + Nuevo Libro
+              </button>
+            </div>
         )}
       </div>
 
@@ -210,7 +216,7 @@ const Libros = () => {
 
       <Table
         columns={columns}
-        data={librosFiltrados}
+        data={libros}
         onView={verDetalle}
         onEdit={puedeGestionarCatalogo ? handleOpenModal : undefined}
         onDelete={puedeGestionarCatalogo ? handleDelete : undefined}
@@ -233,18 +239,23 @@ const Libros = () => {
 
       <Modal isOpen={detalleAbierto} onClose={() => setDetalleAbierto(false)} title="Detalle del Libro">
         {detalle && (
-          <div className={styles.detalleGrid}>
-            <p><strong>Título:</strong> {detalle.titulo}</p>
-            <p><strong>Autor:</strong> {detalle.autor}</p>
-            <p><strong>ISBN:</strong> {detalle.isbn}</p>
-            <p><strong>Editorial:</strong> {detalle.editorial || '-'}</p>
-            <p><strong>Año:</strong> {detalle.anio_publicacion || '-'}</p>
-            <p><strong>Género:</strong> {detalle.genero || '-'}</p>
-            <p>
-              <strong>Estado:</strong>{' '}
-              <Badge tipo={detalle.cantidad_disponible > 0 ? 'disponible' : 'agotado'} />
-              {' '}({detalle.cantidad_disponible} ejemplares)
-            </p>
+          <div className={styles.detalleWrap}>
+            <div className={styles.detallePortada}>
+              <BookCover portada={detalle.portada} titulo={detalle.titulo} size="lg" />
+            </div>
+            <div className={styles.detalleGrid}>
+              <p><strong>Título:</strong> {detalle.titulo}</p>
+              <p><strong>Autor:</strong> {detalle.autor}</p>
+              <p><strong>ISBN:</strong> {detalle.isbn}</p>
+              <p><strong>Editorial:</strong> {detalle.editorial || '-'}</p>
+              <p><strong>Año:</strong> {detalle.anio_publicacion || '-'}</p>
+              <p><strong>Género:</strong> {detalle.genero || '-'}</p>
+              <p>
+                <strong>Estado:</strong>{' '}
+                <Badge tipo={detalle.cantidad_disponible > 0 ? 'disponible' : 'agotado'} />
+                {' '}({detalle.cantidad_disponible} ejemplares)
+              </p>
+            </div>
           </div>
         )}
       </Modal>
@@ -328,6 +339,21 @@ const Libros = () => {
               value={formData.genero}
               onChange={handleChange}
             />
+          </div>
+          <div className={styles.formGroup}>
+            <label>URL de la portada</label>
+            <input
+              type="url"
+              name="portada"
+              value={formData.portada}
+              onChange={handleChange}
+              placeholder="https://covers.openlibrary.org/b/isbn/XXXX-L.jpg"
+            />
+            {formData.portada && (
+              <div className={styles.portadaPreview}>
+                <BookCover portada={formData.portada} titulo={formData.titulo} size="sm" />
+              </div>
+            )}
           </div>
           <div className={styles.formActions}>
             <button type="button" className={styles.btnSecondary} onClick={handleCloseModal}>

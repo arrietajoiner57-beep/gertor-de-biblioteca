@@ -61,7 +61,7 @@ export const createUsuario = (data) => api.post('/usuarios', data);
 export const updateUsuario = (id, data) => api.put(`/usuarios/${id}`, data);
 export const deleteUsuario = (id) => api.delete(`/usuarios/${id}`);
 
-export const getLibros = () => api.get('/libros');
+export const getLibros = (q) => api.get('/libros', { params: q ? { q } : {} });
 export const getLibro = (id) => api.get(`/libros/${id}`);
 export const createLibro = (data) => api.post('/libros', data);
 export const updateLibro = (id, data) => api.put(`/libros/${id}`, data);
@@ -79,5 +79,35 @@ export const rechazarPrestamo = (id) => api.put(`/prestamos/${id}/rechazar`);
 export const updatePrestamo = (id, data) => api.put(`/prestamos/${id}`, data);
 export const devolverPrestamo = (id) => api.put(`/prestamos/${id}/devolver`);
 export const deletePrestamo = (id) => api.delete(`/prestamos/${id}`);
+
+export async function descargarReporte(seccion, formato) {
+  const token = localStorage.getItem(TOKEN_KEY);
+  const url = `${API_URL}/reportes/${seccion}/${formato}`;
+
+  const respuesta = await fetch(url, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {}
+  });
+
+  if (!respuesta.ok) {
+    let msg = 'No se pudo generar el reporte';
+    try {
+      const data = await respuesta.json();
+      msg = data.message || msg;
+    } catch (e) { /* ignorar */ }
+    throw new Error(msg);
+  }
+
+  const blob = await respuesta.blob();
+  const nombre = `reporte_${seccion}_${Date.now()}.${formato === 'pdf' ? 'pdf' : 'xlsx'}`;
+  const urlObjeto = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = urlObjeto;
+  link.download = nombre;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(urlObjeto);
+  return nombre;
+}
 
 export default api;
