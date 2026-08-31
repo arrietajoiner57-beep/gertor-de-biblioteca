@@ -10,7 +10,8 @@ Incluye reportes **PDF/Excel**, notificaciones en **tiempo real** (Socket.IO), *
 
 ```
 ├── backend/                 → API REST (Express + mysql2 + JWT)
-│   ├── .env                 → Configuración (BD, JWT, admin inicial)
+│   ├── .env                 → Configuración (BD, JWT, admin inicial) — no se sube
+│   ├── .env.example         → Modelo de configuración para copiar a .env
 │   ├── Dockerfile           → Imagen del backend (node:20-alpine)
 │   ├── dockerEntrypoint.js  → Espera la BD, siembra admin y arranca
 │   └── src/
@@ -90,14 +91,21 @@ Incluye reportes **PDF/Excel**, notificaciones en **tiempo real** (Socket.IO), *
    npm run install-all
    ```
 
-2. **Iniciar MySQL** desde el panel de XAMPP.
+2. **Configurar el entorno** (solo la primera vez): el archivo `backend/.env` con las
+   credenciales de tu MySQL/AJWT no se sube a git. Copia el modelo y edítalo:
+   ```
+   copy backend\.env.example backend\.env
+   ```
+   (En Linux/macOS: `cp backend/.env.example backend/.env`)
 
-3. **Crear la base de datos** (solo la primera vez):
+3. **Iniciar MySQL** desde el panel de XAMPP.
+
+4. **Crear la base de datos** (solo la primera vez):
    ```
    npm run db
    ```
 
-4. **Crear el administrador inicial** (lee `backend/.env`):
+5. **Crear el administrador inicial** (lee `backend/.env`):
    ```
    npm run seed
    ```
@@ -107,14 +115,14 @@ Incluye reportes **PDF/Excel**, notificaciones en **tiempo real** (Socket.IO), *
 
    ⚠️ Cámbialas editando `ADMIN_EMAIL` y `ADMIN_CONTRASENA` en `backend/.env` antes del seed.
 
-5. **(Opcional) Datos de demostración** — para un dashboard vivo con portadas, más
+6. **(Opcional) Datos de demostración** — para un dashboard vivo con portadas, más
    libros y préstamos de ejemplo (activos, pendientes, vencidos y devueltos):
    ```
    npm run db:seed-wow            # Columna portada + catálogo ampliado con portadas
    npm run db:seed-prestamos      # Préstamos de ejemplo (idempotente)
    ```
 
-6. **Levantar backend y frontend juntos**:
+7. **Levantar backend y frontend juntos**:
    ```
    npm run dev
    ```
