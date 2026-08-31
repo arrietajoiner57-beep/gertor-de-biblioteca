@@ -10,7 +10,8 @@ const COLORES = {
   agotado: styles.rojo,
   admin: styles.dorado,
   bibliotecario: styles.esmeralda,
-  user: styles.azul
+  user: styles.azul,
+  favorito: styles.violeta
 };
 
 const ETIQUETAS = {
@@ -25,9 +26,9 @@ const ETIQUETAS = {
   user: 'Usuario'
 };
 
-function Badge({ tipo }) {
+function Badge({ tipo, children }) {
   const color = COLORES[tipo] || styles.azul;
-  const etiqueta = ETIQUETAS[tipo] || tipo;
+  const etiqueta = children || ETIQUETAS[tipo] || tipo;
 
   return <span className={`${styles.badge} ${color}`}>{etiqueta}</span>;
 }

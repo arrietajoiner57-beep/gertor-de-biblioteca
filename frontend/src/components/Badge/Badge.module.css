@@ -1,38 +1,78 @@
 .badge {
-  display: inline-block;
-  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  white-space: nowrap;
 }
 
+.badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* Devuelto / Disponible */
 .verde {
-  background: var(--color-success-light);
-  color: #047857;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--color-emerald-light);
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.18);
 }
 
+/* Vencido / Agotado */
 .rojo {
-  background: var(--color-danger-light);
-  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--color-red-light);
+  border-color: rgba(239, 68, 68, 0.32);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.18);
 }
 
+/* Administrador */
 .dorado {
-  background: var(--color-accent-light);
-  color: #92710a;
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--color-gold-light);
+  border-color: rgba(245, 158, 11, 0.32);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.16);
 }
 
+/* Bibliotecario */
 .esmeralda {
-  background: var(--color-success-light);
-  color: #047857;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--color-emerald-light);
+  border-color: rgba(16, 185, 129, 0.32);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.16);
 }
 
+/* Pendiente */
 .naranja {
-  background: var(--color-orange-light);
-  color: #c2410c;
+  background: rgba(249, 115, 22, 0.12);
+  color: var(--color-orange);
+  border-color: rgba(249, 115, 22, 0.32);
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.16);
 }
 
+/* Activo / Usuario */
 .azul {
-  background: var(--color-info-light);
-  color: #1d4ed8;
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--color-blue-light);
+  border-color: rgba(59, 130, 246, 0.32);
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.16);
+}
+
+/* Favorito / destacado */
+.violeta {
+  background: rgba(139, 92, 246, 0.14);
+  color: var(--color-violet-light);
+  border-color: rgba(139, 92, 246, 0.34);
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.18);
 }

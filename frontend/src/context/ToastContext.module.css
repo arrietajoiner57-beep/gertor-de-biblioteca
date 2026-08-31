@@ -12,27 +12,29 @@
 .toast {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: #fff;
-  color: #1f2430;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-  border-left: 4px solid #9096a3;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
   font-size: 0.9rem;
-  animation: entrar 0.25s ease;
+  box-shadow: var(--shadow-lg);
+  animation: entrar 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .icono {
   flex-shrink: 0;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.85rem;
 }
 
@@ -45,45 +47,52 @@
   flex-shrink: 0;
   border: none;
   background: transparent;
-  color: #9096a3;
-  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  font-size: 1.15rem;
   line-height: 1;
   cursor: pointer;
   padding: 0 2px;
+  transition: color var(--transition);
 }
 
 .cerrar:hover {
-  color: #1f2430;
+  color: var(--color-red-light);
 }
 
 .exito {
-  border-left-color: #0f9d58;
+  border-left: 3px solid var(--color-emerald);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-emerald);
 }
 .exito .icono {
-  background: #0f9d58;
+  background: var(--color-emerald);
+  box-shadow: var(--shadow-glow-emerald);
 }
 
 .error {
-  border-left-color: #d93025;
+  border-left: 3px solid var(--color-red);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-red);
 }
 .error .icono {
-  background: #d93025;
+  background: var(--color-red);
+  box-shadow: var(--shadow-glow-red);
 }
 
 .info {
-  border-left-color: #3b82f6;
+  border-left: 3px solid var(--color-blue);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-blue);
 }
 .info .icono {
-  background: #3b82f6;
+  background: var(--color-blue);
+  box-shadow: var(--shadow-glow-blue);
 }
 
 @keyframes entrar {
   from {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(34px) scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
   }
 }

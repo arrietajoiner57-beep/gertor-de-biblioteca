@@ -1,7 +1,9 @@
 .tableContainer {
-  background: var(--color-surface);
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   border: 1px solid var(--color-border);
   overflow: hidden;
 }
@@ -19,16 +21,25 @@
 }
 
 .table th {
-  background: var(--color-primary);
-  color: white;
-  font-weight: 600;
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
+  background: rgba(11, 17, 32, 0.6);
+  color: var(--color-text-muted);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
+.table td {
+  color: var(--color-text);
+  font-size: 0.9rem;
+}
+
+.table tbody tr {
+  transition: background var(--transition);
+}
+
 .table tbody tr:hover {
-  background: var(--color-bg);
+  background: rgba(139, 92, 246, 0.06);
 }
 
 .table tbody tr:last-child td {
@@ -54,37 +65,43 @@
 
 .btn {
   padding: 7px 14px;
-  border: none;
-  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
   cursor: pointer;
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: 0.78rem;
+  font-weight: 700;
   transition: all var(--transition);
 }
 
 .btnVer {
-  background: var(--color-success-light);
-  color: #047857;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--color-emerald-light);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
 .btnVer:hover {
-  background: #a7f3d0;
+  background: rgba(16, 185, 129, 0.24);
+  box-shadow: var(--shadow-glow-emerald);
 }
 
 .btnEdit {
-  background: var(--color-info-light);
-  color: #1d4ed8;
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--color-blue-light);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .btnEdit:hover {
-  background: #bfdbfe;
+  background: rgba(59, 130, 246, 0.24);
+  box-shadow: var(--shadow-glow-blue);
 }
 
 .btnDelete {
-  background: var(--color-danger-light);
-  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--color-red-light);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .btnDelete:hover {
-  background: #fecaca;
+  background: rgba(239, 68, 68, 0.24);
+  box-shadow: var(--shadow-glow-red);
 }

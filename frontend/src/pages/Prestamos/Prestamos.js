@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import Table from '../../components/Table/Table';
 import Modal from '../../components/Modal/Modal';
 import Badge from '../../components/Badge/Badge';
 import ExportButtons from '../../components/ExportButtons/ExportButtons';
+import { useToasts } from '../../context/ToastContext';
 import {
   getPrestamos,
+  getPrestamo,
   getUsuarios,
   getLibros,
   createPrestamo,
@@ -16,23 +17,51 @@ import {
 } from '../../services/api';
 import styles from './Prestamos.module.css';
 
-const FILTROS = [
-  { valor: '', etiqueta: 'Todos' },
-  { valor: 'pendiente', etiqueta: 'Pendientes' },
-  { valor: 'activo', etiqueta: 'Activos' },
-  { valor: 'vencido', etiqueta: 'Vencidos' },
-  { valor: 'devuelto', etiqueta: 'Devueltos' }
+const COLUMNAS = [
+  {
+    estado: 'pendiente',
+    titulo: 'Solicitudes pendientes',
+    icono: '🕐',
+    dot: 'var(--color-gold)'
+  },
+  {
+    estado: 'activo',
+    titulo: 'Préstamos activos',
+    icono: '📖',
+    dot: 'var(--color-blue)'
+  },
+  {
+    estado: 'vencido',
+    titulo: 'Vencidos',
+    icono: '⏰',
+    dot: 'var(--color-red)'
+  },
+  {
+    estado: 'devuelto',
+    titulo: 'Devueltos',
+    icono: '✅',
+    dot: 'var(--color-emerald)'
+  }
 ];
+
+const variaAntesDe = (fecha) => {
+  if (!fecha) return null;
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const fin = new Date(fecha);
+  fin.setHours(0, 0, 0, 0);
+  return Math.round((fin - hoy) / 86400000);
+};
 
 const Prestamos = () => {
   const [prestamos, setPrestamos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [libros, setLibros] = useState([]);
-  const [filtro, setFiltro] = useState('');
   const [modalAbierto, setModalAbierto] = useState(false);
   const [editarAbierto, setEditarAbierto] = useState(false);
   const [prestamoEditar, setPrestamoEditar] = useState(null);
   const [errorModal, setErrorModal] = useState('');
+  const [cargando, setCargando] = useState(true);
   const [formData, setFormData] = useState({
     usuario_id: '',
     fecha_prestamo: new Date().toISOString().split('T')[0],
@@ -40,14 +69,7 @@ const Prestamos = () => {
     libros: [{ libro_id: '', cantidad: 1 }]
   });
   const [fechasEdicion, setFechasEdicion] = useState({ fecha_prestamo: '', fecha_devolucion: '' });
-
-  const columns = [
-    { key: 'id', label: 'ID' },
-    { key: 'nombre_usuario', label: 'Usuario' },
-    { key: 'fecha_prestamo', label: 'Fecha Préstamo' },
-    { key: 'fecha_devolucion', label: 'Fecha Límite' },
-    { key: 'estado', label: 'Estado', render: (row) => <Badge tipo={row.estado} /> }
-  ];
+  const toasts = useToasts();
 
   useEffect(() => {
     fetchUsuarios();
@@ -55,15 +77,25 @@ const Prestamos = () => {
   }, []);
 
   useEffect(() => {
-    fetchPrestamos(filtro);
-  }, [filtro]);
+    fetchPrestamos();
+  }, []);
 
-  const fetchPrestamos = async (estado) => {
+  const fetchPrestamos = async () => {
     try {
-      const response = await getPrestamos(estado || undefined);
-      setPrestamos(response.data);
+      setCargando(true);
+      const response = await getPrestamos();
+      const conDetalles = await Promise.all(
+        response.data.map((p) =>
+          getPrestamo(p.id)
+            .then((r) => ({ ...p, detalles: r.data.detalles || [] }))
+            .catch(() => ({ ...p, detalles: [] }))
+        )
+      );
+      setPrestamos(conDetalles);
     } catch (error) {
       console.error('Error al obtener préstamos:', error);
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -119,7 +151,8 @@ const Prestamos = () => {
 
     try {
       await createPrestamo(formData);
-      fetchPrestamos(filtro);
+      toasts.exito('Préstamo creado correctamente');
+      fetchPrestamos();
       handleCloseModals();
     } catch (error) {
       setErrorModal(mensajeError(error));
@@ -132,7 +165,8 @@ const Prestamos = () => {
 
     try {
       await updatePrestamo(prestamoEditar.id, fechasEdicion);
-      fetchPrestamos(filtro);
+      toasts.exito('Fechas actualizadas correctamente');
+      fetchPrestamos();
       handleCloseModals();
     } catch (error) {
       setErrorModal(mensajeError(error));
@@ -146,10 +180,10 @@ const Prestamos = () => {
 
     try {
       const response = await devolverPrestamo(id);
-      alert(response.data.message);
-      fetchPrestamos(filtro);
+      toasts.exito(response.data.message);
+      fetchPrestamos();
     } catch (error) {
-      alert(mensajeError(error));
+      toasts.error(mensajeError(error));
     }
   };
 
@@ -160,10 +194,10 @@ const Prestamos = () => {
 
     try {
       const response = await aprobarPrestamo(id);
-      alert(response.data.message);
-      fetchPrestamos(filtro);
+      toasts.exito(response.data.message);
+      fetchPrestamos();
     } catch (error) {
-      alert(mensajeError(error));
+      toasts.error(mensajeError(error));
     }
   };
 
@@ -174,10 +208,10 @@ const Prestamos = () => {
 
     try {
       const response = await rechazarPrestamo(id);
-      alert(response.data.message);
-      fetchPrestamos(filtro);
+      toasts.exito(response.data.message);
+      fetchPrestamos();
     } catch (error) {
-      alert(mensajeError(error));
+      toasts.error(mensajeError(error));
     }
   };
 
@@ -210,8 +244,11 @@ const Prestamos = () => {
     setFormData({ ...formData, libros: newLibros });
   };
 
+  const inicial = (nombre) => (nombre || '?').charAt(0).toUpperCase();
+
   return (
     <div className={styles.container}>
+      {/* ===== Header ===== */}
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Préstamos</h1>
@@ -220,51 +257,128 @@ const Prestamos = () => {
         <div className={styles.headerAcciones}>
           <ExportButtons seccion="prestamos" />
           <button className={styles.addBtn} onClick={handleOpenModal}>
-            + Nuevo Préstamo
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Nuevo Préstamo
           </button>
         </div>
       </div>
 
-      <div className={styles.filtros}>
-        {FILTROS.map((f) => (
-          <button
-            key={f.valor}
-            className={`${styles.filtroBtn} ${filtro === f.valor ? styles.filtroActivo : ''}`}
-            onClick={() => setFiltro(f.valor)}
-          >
-            {f.etiqueta}
-          </button>
-        ))}
+      {/* ===== Pipeline resumen ===== */}
+      <div className={styles.pipeline}>
+        {COLUMNAS.map((c) => {
+          const total = prestamos.filter((p) => p.estado === c.estado).length;
+          const resaltado = c.estado === 'vencido' && total > 0;
+          return (
+            <div key={c.estado} className={`${styles.pipelineItem} ${resaltado ? styles.pipelinePeligro : ''}`}>
+              <span className={styles.pipelineIcono}>{c.icono}</span>
+              <div>
+                <span className={styles.pipelineNumero}>{total}</span>
+                <span className={styles.pipelineEtiqueta}>{c.titulo}</span>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      <Table
-        columns={columns}
-        data={prestamos}
-        onView={undefined}
-        onEdit={(row) => handleOpenEditar(row)}
-        onDelete={(id) => handleDevolver(id)}
-        deleteLabel="Devolver"
-        showDeleteFor={(row) => row.estado === 'activo' || row.estado === 'vencido'}
-        customActions={(row) =>
-          row.estado === 'pendiente' ? (
-            <div className={styles.actionsGroup}>
-              <button
-                className={styles.btnAprobar}
-                onClick={() => handleAprobar(row.id)}
-              >
-                Aprobar
-              </button>
-              <button
-                className={styles.btnRechazar}
-                onClick={() => handleRechazar(row.id)}
-              >
-                Rechazar
-              </button>
-            </div>
-          ) : null
-        }
-      />
+      {/* ===== Kanban ===== */}
+      <div className={styles.tablero}>
+        {COLUMNAS.map((c) => {
+          const tarjetas = prestamos.filter((p) => p.estado === c.estado);
+          return (
+            <section key={c.estado} className={styles.columna}>
+              <header className={styles.columnaHeader}>
+                <span className={styles.columnaDot} style={{ background: c.dot, boxShadow: `0 0 10px ${c.dot}` }} />
+                <h3>{c.icono} {c.titulo}</h3>
+                <span className={styles.columnaCount}>{tarjetas.length}</span>
+              </header>
 
+              <div className={styles.columnaBody}>
+                {tarjetas.length === 0 && (
+                  <div className={styles.columnaVacia}>Sin tarjetas</div>
+                )}
+
+                {tarjetas.map((p) => {
+                  const dias = variaAntesDe(p.fecha_devolucion);
+                  const esVencido = p.estado === 'vencido';
+                  return (
+                    <article key={p.id} className={`${styles.tarjeta} ${esVencido ? styles.tarjetaVencida : ''}`}>
+                      <div className={styles.tarjetaTop}>
+                        <span className={styles.tarjetaAvatar}>
+                          {inicial(p.nombre_usuario)}
+                        </span>
+                        <div className={styles.tarjetaUsuario}>
+                          <h4>{p.nombre_usuario}</h4>
+                          <span className={styles.tarjetaId}>Préstamo #{p.id}</span>
+                        </div>
+                        <Badge tipo={p.estado} />
+                      </div>
+
+                      {(p.detalles || []).length > 0 && (
+                        <div className={styles.tarjetaLibros}>
+                          {p.detalles.map((d, i) => (
+                            <span key={i} className={styles.libroChip}>
+                              📖 {d.titulo_libro}
+                              <b>x{d.cantidad}</b>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className={styles.tarjetaFechas}>
+                        <span>
+                          <small>Inicio</small>
+                          {p.fecha_prestamo}
+                        </span>
+                        <span className={esVencido ? styles.fechaVencida : ''}>
+                          <small>{esVencido ? 'Vencida' : 'Entrega'}</small>
+                          {p.fecha_devolucion}
+                          {dias !== null && p.estado === 'activo' && (
+                            <em className={styles.diasRestantes}>
+                              {dias === 0 ? 'hoy' : dias < 0 ? `${Math.abs(dias)}d de retraso` : `en ${dias}d`}
+                            </em>
+                          )}
+                        </span>
+                      </div>
+
+                      <div className={styles.tarjetaAcciones}>
+                        {p.estado === 'pendiente' && (
+                          <>
+                            <button className={`${styles.accBtn} ${styles.accAprobar}`} onClick={() => handleAprobar(p.id)}>
+                              ✓ Aprobar
+                            </button>
+                            <button className={`${styles.accBtn} ${styles.accRechazar}`} onClick={() => handleRechazar(p.id)}>
+                              ✕ Rechazar
+                            </button>
+                          </>
+                        )}
+                        {(p.estado === 'activo' || p.estado === 'vencido') && (
+                          <>
+                            <button className={`${styles.accBtn} ${styles.accDevolver}`} onClick={() => handleDevolver(p.id)}>
+                              ↺ Devolver
+                            </button>
+                            <button className={`${styles.accBtn} ${styles.accEditar}`} onClick={() => handleOpenEditar(p)}>
+                              ✎ Fechas
+                            </button>
+                          </>
+                        )}
+                        {p.estado === 'devuelto' && (
+                          <span className={styles.devueltoNota}>Completado</span>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })}
+      </div>
+
+      {cargando && <div className={styles.cargando}>Cargando préstamos...</div>}
+
+      {/* ===== Modal editar fechas ===== */}
       <Modal isOpen={editarAbierto} onClose={handleCloseModals} title={`Editar Préstamo #${prestamoEditar ? prestamoEditar.id : ''}`}>
         <form onSubmit={handleGuardarEdicion}>
           {errorModal && <div className={styles.errorAlerta} role="alert">{errorModal}</div>}
@@ -308,6 +422,7 @@ const Prestamos = () => {
         </form>
       </Modal>
 
+      {/* ===== Modal nuevo préstamo ===== */}
       <Modal isOpen={modalAbierto} onClose={handleCloseModals} title="Nuevo Préstamo">
         <form onSubmit={handleSubmit}>
           {errorModal && <div className={styles.errorAlerta} role="alert">{errorModal}</div>}

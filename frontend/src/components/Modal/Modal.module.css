@@ -1,35 +1,44 @@
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(10, 22, 40, 0.6);
-  backdrop-filter: blur(4px);
+  inset: 0;
+  background: rgba(6, 10, 20, 0.66);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 20px;
+  animation: fadeIn var(--transition) both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal {
-  background: var(--color-surface);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border-bright);
   border-radius: var(--radius-xl);
-  width: 90%;
-  max-width: 500px;
+  width: 100%;
+  max-width: 540px;
   max-height: 90vh;
   overflow-y: auto;
-  animation: slideIn 0.25s ease;
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-xl), var(--shadow-glow-violet);
+  animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+  position: relative;
 }
 
-@keyframes slideIn {
+@keyframes modalIn {
   from {
-    transform: translateY(-20px);
+    transform: translateY(-18px) scale(0.96);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
 }
@@ -38,34 +47,49 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--color-border);
+  padding: 20px 26px;
+  border-bottom: 1px solid var(--color-border-light);
+  position: sticky;
+  top: 0;
+  background: rgba(23, 33, 56, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  z-index: 2;
 }
 
 .header h2 {
   margin: 0;
-  color: var(--color-text);
-  font-size: 1.15rem;
-  font-weight: 600;
+  color: var(--color-heading);
+  font-size: 1.12rem;
+  font-weight: 700;
 }
 
 .closeBtn {
-  background: none;
-  border: none;
-  font-size: 1.8rem;
-  cursor: pointer;
-  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--color-border);
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  font-size: 1.15rem;
   line-height: 1;
-  padding: 0;
-  transition: color var(--transition);
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
 }
 
 .closeBtn:hover {
-  color: var(--color-danger);
+  color: var(--color-red-light);
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.1);
+  box-shadow: var(--shadow-glow-red);
 }
 
 .content {
-  padding: 24px;
+  padding: 26px;
 }
 
 .form-group {
@@ -89,15 +113,15 @@
   font-size: 0.95rem;
   box-sizing: border-box;
   transition: all var(--transition);
-  background: var(--color-surface);
+  background: rgba(9, 13, 22, 0.6);
   color: var(--color-text);
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-accent-glow);
+  border-color: var(--color-violet);
+  box-shadow: 0 0 0 3px var(--color-accent-glow), var(--shadow-glow-violet-sm);
 }
 
 .formActions {
@@ -118,22 +142,23 @@
 }
 
 .btnPrimary {
-  background: var(--color-accent);
-  color: var(--color-primary);
+  background: linear-gradient(120deg, var(--color-violet), var(--color-violet-dark));
+  color: #fff;
+  box-shadow: var(--shadow-glow-violet-sm);
 }
 
 .btnPrimary:hover {
-  background: var(--color-accent-hover);
   transform: translateY(-1px);
+  box-shadow: var(--shadow-glow-violet);
 }
 
 .btnSecondary {
-  background: var(--color-bg);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--color-text-secondary);
   border: 1px solid var(--color-border);
 }
 
 .btnSecondary:hover {
-  background: var(--color-border);
+  background: rgba(255, 255, 255, 0.09);
   color: var(--color-text);
 }
