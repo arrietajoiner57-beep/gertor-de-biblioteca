@@ -69,7 +69,7 @@ const Icono = {
 };
 
 const MENU_ADMIN = [
-  { path: '/app', label: 'Dashboard', icon: 'dashboard' },
+  { path: '/app', label: 'Inicio', icon: 'dashboard' },
   { path: '/app/usuarios', label: 'Usuarios', icon: 'usuarios' },
   { path: '/app/libros', label: 'Libros', icon: 'libros' },
   { path: '/app/prestamos', label: 'Préstamos', icon: 'prestamos' },
@@ -78,7 +78,7 @@ const MENU_ADMIN = [
 ];
 
 const MENU_BIBLIOTECARIO = [
-  { path: '/app', label: 'Dashboard', icon: 'dashboard' },
+  { path: '/app', label: 'Inicio', icon: 'dashboard' },
   { path: '/app/libros', label: 'Libros', icon: 'libros' },
   { path: '/app/prestamos', label: 'Préstamos', icon: 'prestamos' },
   { path: '/app/mis-prestamos', label: 'Mis Préstamos', icon: 'misPrestamos' },
@@ -86,14 +86,14 @@ const MENU_BIBLIOTECARIO = [
 ];
 
 const MENU_USUARIO = [
-  { path: '/app', label: 'Dashboard', icon: 'dashboard' },
+  { path: '/app', label: 'Inicio', icon: 'dashboard' },
   { path: '/app/libros', label: 'Libros', icon: 'libros' },
   { path: '/app/mis-prestamos', label: 'Mis Préstamos', icon: 'misPrestamos' },
   { path: '/app/perfil', label: 'Perfil', icon: 'perfil' }
 ];
 
 const TITULOS = {
-  '/app': 'Dashboard',
+  '/app': 'Inicio',
   '/app/usuarios': 'Usuarios',
   '/app/libros': 'Libros',
   '/app/prestamos': 'Préstamos',
@@ -235,7 +235,7 @@ const Layout = () => {
 
   const rolDisplay = esAdmin ? 'Administrador' : esBibliotecario ? 'Bibliotecario' : 'Lector';
   const roldisplay = esAdmin ? 'admin' : esBibliotecario ? 'bibliotecario' : 'user';
-  const tituloActual = TITULOS[location.pathname] || 'Dashboard';
+  const tituloActual = TITULOS[location.pathname] || 'Inicio';
 
   const iniciales = (nombre) =>
     nombre

@@ -9,6 +9,7 @@
     "db:migrate:roles": "c:\\xampp\\mysql\\bin\\mysql.exe -u root --default-character-set=utf8mb4 < database\\migration_bibliotecario.sql",
     "db:migrate:estados": "c:\\xampp\\mysql\\bin\\mysql.exe -u root --default-character-set=utf8mb4 < database\\migration_pendiente_status.sql",
     "db:seed-wow": "c:\\xampp\\mysql\\bin\\mysql.exe -u root --default-character-set=utf8mb4 < database\\seed_wow.sql",
+    "db:seed-catalogo": "c:\\xampp\\mysql\\bin\\mysql.exe -u root --default-character-set=utf8mb4 < database\\seed_catalogo.sql",
     "db:seed-prestamos": "c:\\xampp\\mysql\\bin\\mysql.exe -u root --default-character-set=utf8mb4 < database\\seed_prestamos.sql",
     "docker:up": "docker compose up -d --build",
     "docker:down": "docker compose down",

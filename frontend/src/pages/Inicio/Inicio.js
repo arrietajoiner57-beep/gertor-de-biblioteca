@@ -471,8 +471,8 @@ const Inicio = () => {
     <div className={styles.container}>
       <div className={styles.headerDash}>
         <div>
-          <span className={styles.eyebrow}>Panel de control</span>
-          <h1 className={styles.title}>Dashboard</h1>
+          <span className={styles.eyebrow}>Biblioteca</span>
+          <h1 className={styles.title}>Inicio</h1>
         </div>
         <p className={styles.subtitle}>{getSubtitle()}</p>
       </div>

@@ -23,24 +23,24 @@
   font-weight: 700;
   cursor: pointer;
   transition: all var(--transition);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--color-surface);
   color: var(--color-text);
+  font-family: var(--font-body);
 }
 
 .btn:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-surface-warm);
   border-color: var(--color-border-bright);
+  box-shadow: var(--shadow-sm);
 }
 
 .btnExcel:hover {
-  color: var(--color-emerald-light);
-  border-color: rgba(16, 185, 129, 0.4);
-  box-shadow: var(--shadow-glow-emerald);
+  color: var(--color-emerald);
+  border-color: rgba(21, 128, 61, 0.4);
 }
 
 .btnPdf:hover {
-  color: var(--color-red-light);
-  border-color: rgba(239, 68, 68, 0.4);
-  box-shadow: var(--shadow-glow-red);
+  color: var(--color-danger);
+  border-color: rgba(220, 38, 38, 0.4);
 }

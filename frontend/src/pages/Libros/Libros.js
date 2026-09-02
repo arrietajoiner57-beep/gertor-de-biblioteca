@@ -139,34 +139,14 @@ const Libros = () => {
   const { puedeGestionarCatalogo } = useAuth();
   const toasts = useToasts();
 
-  /* Catálogo fusionado: datos reales + demo curado (garantiza riqueza visual) */
+  /* Catálogo: solo libros reales de la base de datos.
+     La ficha demo solo aporta datos de presentación (sinopsis, páginas, rating),
+     no crea libros falsos, por lo que eliminar funciona y queda eliminado. */
   const catalogo = useMemo(() => {
-    const claves = new Set();
-    const fusion = (libros || []).map((l) => {
-      claves.add(normalizaGenero(l.genero));
+    return (libros || []).map((l) => {
       const f = fichaDemo(l);
       return { ...l, ...f };
     });
-    const presentes = new Set(fusion.map((l) => String(l.isbn || l.titulo).toLowerCase()));
-    const extra = CATALOGO_DEMO.filter(
-      (d) => !presentes.has(String(d.isbn).toLowerCase())
-    ).map((d) => ({
-      titulo: d.titulo,
-      autor: d.autor,
-      isbn: d.isbn,
-      editorial: 'Biblioteca',
-      anio_publicacion: d.anio_publicacion,
-      genero: d.genero,
-      cantidad_disponible: 2 + (d.isbn.length % 4),
-      portada: d.portada,
-      sinopsis: d.sinopsis,
-      paginas: d.paginas,
-      rating: d.rating,
-      _demo: true
-    }));
-    const resultado = [...fusion, ...extra];
-    resultado.forEach((l) => claves.add(normalizaGenero(l.genero)));
-    return resultado;
   }, [libros]);
 
   const generos = useMemo(() => {
@@ -528,12 +508,19 @@ const Libros = () => {
                   {libro.cantidad_disponible > 0 ? 'Disponible' : 'Agotado'}
                 </span>
 
-                <div className={styles.cover3d}>
-                  <div className={styles.cover3dInner}>
-                    <BookCover portada={libro.portada} titulo={libro.titulo} size="md" />
-                    <div className={styles.coverSheen} />
+                <button
+                  type="button"
+                  className={styles.coverBtn}
+                  onClick={() => verDetalle(libro)}
+                  aria-label={`Ver detalle de ${libro.titulo}`}
+                >
+                  <div className={styles.cover3d}>
+                    <div className={styles.cover3dInner}>
+                      <BookCover portada={libro.portada} titulo={libro.titulo} size="md" />
+                      <div className={styles.coverSheen} />
+                    </div>
                   </div>
-                </div>
+                </button>
 
                 <div className={styles.cardBody}>
                   <h3 className={styles.cardTitulo}>{libro.titulo}</h3>
@@ -601,9 +588,16 @@ const Libros = () => {
         <div className={styles.estanteria}>
           {librosFiltrados.map((libro) => (
             <article key={libro.isbn || libro.id} className={styles.shelfRow}>
-              <div className={styles.shelfCover}>
-                <BookCover portada={libro.portada} titulo={libro.titulo} size="sm" />
-              </div>
+              <button
+                type="button"
+                className={styles.shelfCoverBtn}
+                onClick={() => verDetalle(libro)}
+                aria-label={`Ver detalle de ${libro.titulo}`}
+              >
+                <div className={styles.shelfCover}>
+                  <BookCover portada={libro.portada} titulo={libro.titulo} size="sm" />
+                </div>
+              </button>
               <div className={styles.shelfInfo}>
                 <h3>{libro.titulo}</h3>
                 <p>{libro.autor} · {libro.isbn}</p>
@@ -639,7 +633,7 @@ const Libros = () => {
       )}
 
       {/* ===== Modal quick view / detalle ===== */}
-      <Modal isOpen={detalleAbierto} onClose={() => setDetalleAbierto(false)} title="Vista Prevía del Libro">
+      <Modal isOpen={detalleAbierto} onClose={() => setDetalleAbierto(false)} title="Vista Ampliada del Libro" wide>
         {detalle && (
           <div className={styles.detalleWrap}>
             <div className={styles.detallePortada}>

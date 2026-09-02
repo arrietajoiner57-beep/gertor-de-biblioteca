@@ -3,6 +3,8 @@
 // un catálogo visualmente rico: sinopsis, valoración, nº de páginas,
 // género y portadas HD (servicio público de portadas de Open Library).
 // Todos los ISBN usan portadas públicas por ISBN.
+// Nota: los ISBN de "Un mundo feliz" y "Cien años de soledad" usan
+// ediciones con cubierta validada en Open Library (los anteriores no tenían).
 
 const cover = (isbn) => `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
 
@@ -95,7 +97,7 @@ export const CATALOGO_DEMO = [
     portada: cover('978-8437604573')
   },
   {
-    isbn: '978-0307474728',
+    isbn: '978-0060883287',
     titulo: 'Cien años de soledad',
     autor: 'Gabriel García Márquez',
     genero: 'Realismo Mágico',
@@ -206,7 +208,7 @@ export const CATALOGO_DEMO = [
     portada: cover('978-0142437209')
   },
   {
-    isbn: '978-0307477421',
+    isbn: '978-0060850524',
     titulo: 'Un mundo feliz',
     autor: 'Aldous Huxley',
     genero: 'Distopía',

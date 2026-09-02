@@ -4,9 +4,9 @@
   gap: 6px;
   padding: 5px 12px;
   border-radius: var(--radius-full);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   border: 1px solid transparent;
   white-space: nowrap;
@@ -18,61 +18,53 @@
   height: 6px;
   border-radius: 50%;
   background: currentColor;
-  box-shadow: 0 0 8px currentColor;
 }
 
 /* Devuelto / Disponible */
 .verde {
-  background: rgba(16, 185, 129, 0.12);
-  color: var(--color-emerald-light);
-  border-color: rgba(16, 185, 129, 0.3);
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.18);
+  background: var(--color-emerald-tint);
+  color: var(--color-emerald);
+  border-color: rgba(21, 128, 61, 0.3);
 }
 
 /* Vencido / Agotado */
 .rojo {
-  background: rgba(239, 68, 68, 0.12);
-  color: var(--color-red-light);
-  border-color: rgba(239, 68, 68, 0.32);
-  box-shadow: 0 0 16px rgba(239, 68, 68, 0.18);
+  background: var(--color-red-tint);
+  color: var(--color-danger);
+  border-color: rgba(220, 38, 38, 0.28);
 }
 
 /* Administrador */
 .dorado {
-  background: rgba(245, 158, 11, 0.12);
+  background: var(--color-gold-tint);
   color: var(--color-gold-light);
-  border-color: rgba(245, 158, 11, 0.32);
-  box-shadow: 0 0 16px rgba(245, 158, 11, 0.16);
+  border-color: rgba(217, 119, 6, 0.3);
 }
 
 /* Bibliotecario */
 .esmeralda {
-  background: rgba(16, 185, 129, 0.12);
-  color: var(--color-emerald-light);
-  border-color: rgba(16, 185, 129, 0.32);
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.16);
+  background: var(--color-emerald-tint);
+  color: #0f6b34;
+  border-color: rgba(21, 128, 61, 0.3);
 }
 
 /* Pendiente */
 .naranja {
-  background: rgba(249, 115, 22, 0.12);
+  background: #fdeee2;
   color: var(--color-orange);
-  border-color: rgba(249, 115, 22, 0.32);
-  box-shadow: 0 0 16px rgba(249, 115, 22, 0.16);
+  border-color: rgba(194, 65, 12, 0.3);
 }
 
 /* Activo / Usuario */
 .azul {
-  background: rgba(59, 130, 246, 0.12);
+  background: var(--color-blue-tint);
   color: var(--color-blue-light);
-  border-color: rgba(59, 130, 246, 0.32);
-  box-shadow: 0 0 16px rgba(59, 130, 246, 0.16);
+  border-color: rgba(29, 78, 216, 0.28);
 }
 
 /* Favorito / destacado */
 .violeta {
-  background: rgba(139, 92, 246, 0.14);
-  color: var(--color-violet-light);
-  border-color: rgba(139, 92, 246, 0.34);
-  box-shadow: 0 0 16px rgba(139, 92, 246, 0.18);
+  background: var(--color-accent-soft-tint);
+  color: var(--color-accent);
+  border-color: rgba(61, 35, 20, 0.26);
 }

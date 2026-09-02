@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-width: 360px;
+  max-width: 380px;
 }
 
 .toast {
@@ -15,20 +15,18 @@
   gap: 12px;
   padding: 14px 16px;
   border-radius: var(--radius);
-  background: var(--glass-bg-strong);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: var(--color-surface);
   color: var(--color-text);
   border: 1px solid var(--color-border);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   box-shadow: var(--shadow-lg);
-  animation: entrar 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: entrar 0.3s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 .icono {
   flex-shrink: 0;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -56,34 +54,28 @@
 }
 
 .cerrar:hover {
-  color: var(--color-red-light);
+  color: var(--color-danger);
 }
 
 .exito {
-  border-left: 3px solid var(--color-emerald);
-  box-shadow: var(--shadow-lg), var(--shadow-glow-emerald);
+  border-left: 4px solid var(--color-emerald);
 }
 .exito .icono {
   background: var(--color-emerald);
-  box-shadow: var(--shadow-glow-emerald);
 }
 
 .error {
-  border-left: 3px solid var(--color-red);
-  box-shadow: var(--shadow-lg), var(--shadow-glow-red);
+  border-left: 4px solid var(--color-danger);
 }
 .error .icono {
-  background: var(--color-red);
-  box-shadow: var(--shadow-glow-red);
+  background: var(--color-danger);
 }
 
 .info {
-  border-left: 3px solid var(--color-blue);
-  box-shadow: var(--shadow-lg), var(--shadow-glow-blue);
+  border-left: 4px solid var(--color-blue-light);
 }
 .info .icono {
-  background: var(--color-blue);
-  box-shadow: var(--shadow-glow-blue);
+  background: var(--color-blue-light);
 }
 
 @keyframes entrar {
