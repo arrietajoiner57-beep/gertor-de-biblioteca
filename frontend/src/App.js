@@ -14,6 +14,7 @@ import Libros from './pages/Libros/Libros';
 import Prestamos from './pages/Prestamos/Prestamos';
 import MisPrestamos from './pages/MisPrestamos/MisPrestamos';
 import Perfil from './pages/Perfil/Perfil';
+import Comunidad from './pages/Comunidad/Comunidad';
 import AccesoDenegado from './pages/AccesoDenegado/AccesoDenegado';
 import './App.css';
 
@@ -55,6 +56,7 @@ function App() {
                   }
                 />
                 <Route path="mis-prestamos" element={<MisPrestamos />} />
+                <Route path="comunidad" element={<Comunidad />} />
                 <Route path="perfil" element={<Perfil />} />
                 <Route path="acceso-denegado" element={<AccesoDenegado />} />
                 <Route path="*" element={<AccesoDenegado />} />

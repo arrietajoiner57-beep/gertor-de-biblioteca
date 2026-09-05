@@ -3,6 +3,7 @@ import Modal from '../../components/Modal/Modal';
 import Badge from '../../components/Badge/Badge';
 import BookCover from '../../components/BookCover/BookCover';
 import ExportButtons from '../../components/ExportButtons/ExportButtons';
+import Resenas from '../../components/Resenas/Resenas';
 import { useAuth } from '../../context/AuthContext';
 import { useToasts } from '../../context/ToastContext';
 import {
@@ -635,7 +636,8 @@ const Libros = () => {
       {/* ===== Modal quick view / detalle ===== */}
       <Modal isOpen={detalleAbierto} onClose={() => setDetalleAbierto(false)} title="Vista Ampliada del Libro" wide>
         {detalle && (
-          <div className={styles.detalleWrap}>
+          <>
+            <div className={styles.detalleWrap}>
             <div className={styles.detallePortada}>
               <div className={styles.detallePortada3d}>
                 <BookCover portada={detalle.portada} titulo={detalle.titulo} size="lg" />
@@ -679,6 +681,11 @@ const Libros = () => {
               )}
             </div>
           </div>
+
+          <div className={styles.detalleResenas}>
+            <Resenas libroId={detalle.id} />
+          </div>
+          </>
         )}
       </Modal>
 

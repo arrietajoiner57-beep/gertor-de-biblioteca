@@ -306,11 +306,11 @@
   pointer-events: none;
 }
 
+.campo input,
 .inputWrap input {
   width: 100%;
   box-sizing: border-box;
   padding: 12px 16px;
-  padding-left: 44px;
   background: var(--color-surface);
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius);
@@ -320,12 +320,19 @@
   transition: all var(--transition);
 }
 
+.inputWrap input[type='password'],
+.inputWrap input[type='text']:has(+ .ojo) {
+  padding-right: 44px;
+}
+
+.campo input:focus,
 .inputWrap input:focus {
   outline: none;
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px var(--color-accent-soft);
 }
 
+.campo input::placeholder,
 .inputWrap input::placeholder {
   color: var(--color-text-muted);
 }

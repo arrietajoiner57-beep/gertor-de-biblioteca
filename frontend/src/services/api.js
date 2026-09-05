@@ -80,6 +80,20 @@ export const updatePrestamo = (id, data) => api.put(`/prestamos/${id}`, data);
 export const devolverPrestamo = (id) => api.put(`/prestamos/${id}/devolver`);
 export const deletePrestamo = (id) => api.delete(`/prestamos/${id}`);
 
+export const getResenasRecientes = (limite) =>
+  api.get('/resenas', { params: limite ? { limite } : {} });
+export const getResenasLibro = (libroId) => api.get(`/resenas/libro/${libroId}`);
+export const crearResena = (data) => api.post('/resenas', data);
+export const toggleLikeResena = (id) => api.post(`/resenas/${id}/like`);
+export const eliminarResena = (id) => api.delete(`/resenas/${id}`);
+
+export const getSugerencias = () => api.get('/sugerencias');
+export const crearSugerencia = (data) => api.post('/sugerencias', data);
+export const votarSugerencia = (id) => api.post(`/sugerencias/${id}/votar`);
+export const cambiarEstadoSugerencia = (id, estado) =>
+  api.put(`/sugerencias/${id}/estado`, { estado });
+export const eliminarSugerencia = (id) => api.delete(`/sugerencias/${id}`);
+
 export async function descargarReporte(seccion, formato) {
   const token = localStorage.getItem(TOKEN_KEY);
   const url = `${API_URL}/reportes/${seccion}/${formato}`;

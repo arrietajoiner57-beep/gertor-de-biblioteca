@@ -922,6 +922,13 @@
   line-height: 1.7;
 }
 
+.detalleResenas {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 2px solid var(--color-border-light);
+  text-align: left;
+}
+
 /* ===== Solicitar resumen ===== */
 .solicitarResumen {
   display: flex;

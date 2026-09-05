@@ -20,6 +20,8 @@ app.use('/api/usuarios', require('./routes/usuarioRoutes'));
 app.use('/api/libros', require('./routes/libroRoutes'));
 app.use('/api/prestamos', require('./routes/prestamoRoutes'));
 app.use('/api/reportes', require('./routes/reporteRoutes'));
+app.use('/api/resenas', require('./routes/resenaRoutes'));
+app.use('/api/sugerencias', require('./routes/sugerenciaRoutes'));
 
 // ============================================
 // Endpoints Públicos (sin autenticación)

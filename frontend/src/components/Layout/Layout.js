@@ -38,6 +38,13 @@ const Icono = {
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
     </svg>
   ),
+  comunidad: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 11h10v10H7z"/>
+      <path d="M21 11.5a4.5 4.5 0 0 0-4.5-4.5H13l-1.5-3h-4L6 7H3v7.5l2-1.5h3"/>
+      <path d="M3 21c2.5-3.5 5-3.5 7 0"/>
+    </svg>
+  ),
   chevron: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="6 9 12 15 18 9"/>
@@ -74,6 +81,7 @@ const MENU_ADMIN = [
   { path: '/app/libros', label: 'Libros', icon: 'libros' },
   { path: '/app/prestamos', label: 'Préstamos', icon: 'prestamos' },
   { path: '/app/mis-prestamos', label: 'Mis Préstamos', icon: 'misPrestamos' },
+  { path: '/app/comunidad', label: 'Comunidad', icon: 'comunidad' },
   { path: '/app/perfil', label: 'Perfil', icon: 'perfil' }
 ];
 
@@ -82,6 +90,7 @@ const MENU_BIBLIOTECARIO = [
   { path: '/app/libros', label: 'Libros', icon: 'libros' },
   { path: '/app/prestamos', label: 'Préstamos', icon: 'prestamos' },
   { path: '/app/mis-prestamos', label: 'Mis Préstamos', icon: 'misPrestamos' },
+  { path: '/app/comunidad', label: 'Comunidad', icon: 'comunidad' },
   { path: '/app/perfil', label: 'Perfil', icon: 'perfil' }
 ];
 
@@ -89,6 +98,7 @@ const MENU_USUARIO = [
   { path: '/app', label: 'Inicio', icon: 'dashboard' },
   { path: '/app/libros', label: 'Libros', icon: 'libros' },
   { path: '/app/mis-prestamos', label: 'Mis Préstamos', icon: 'misPrestamos' },
+  { path: '/app/comunidad', label: 'Comunidad', icon: 'comunidad' },
   { path: '/app/perfil', label: 'Perfil', icon: 'perfil' }
 ];
 
@@ -98,6 +108,7 @@ const TITULOS = {
   '/app/libros': 'Libros',
   '/app/prestamos': 'Préstamos',
   '/app/mis-prestamos': 'Mis Préstamos',
+  '/app/comunidad': 'Comunidad y Sugerencias',
   '/app/perfil': 'Perfil'
 };
 
