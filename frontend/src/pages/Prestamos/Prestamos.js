@@ -53,6 +53,55 @@ const variaAntesDe = (fecha) => {
   return Math.round((fin - hoy) / 86400000);
 };
 
+/* ===== Validación estricta de fechas de préstamo ===== */
+const DIAS_SUGERIDOS = 14;
+
+const aISO = (fecha) =>
+  `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
+
+const HOY = aISO(new Date());
+
+const sumarDias = (fechaISO, n) => {
+  const [y, m, d] = fechaISO.split('-').map(Number);
+  return aISO(new Date(y, m - 1, d + n));
+};
+
+const validarFechasNuevo = (data) => {
+  const errores = [];
+  const { fecha_prestamo, fecha_devolucion } = data;
+
+  if (fecha_prestamo && fecha_prestamo < HOY) {
+    errores.push('La fecha de préstamo no puede ser anterior al día de hoy.');
+  }
+  if (fecha_devolucion && fecha_devolucion < HOY) {
+    errores.push('La fecha de devolución no puede ser anterior al día de hoy.');
+  }
+  if (fecha_prestamo && fecha_devolucion && fecha_devolucion < fecha_prestamo) {
+    errores.push('La fecha de devolución debe ser igual o posterior a la fecha de préstamo.');
+  }
+
+  return errores;
+};
+
+const validarFechasEdicion = (fechas, originales) => {
+  const errores = [];
+  const { fecha_prestamo, fecha_devolucion } = fechas;
+  const cambioPrestamo = fecha_prestamo !== originales.fecha_prestamo;
+  const cambioDevolucion = fecha_devolucion !== originales.fecha_devolucion;
+
+  if (cambioPrestamo && fecha_prestamo && fecha_prestamo < HOY) {
+    errores.push('La fecha de préstamo no puede ser anterior al día de hoy.');
+  }
+  if (cambioDevolucion && fecha_devolucion && fecha_devolucion < HOY) {
+    errores.push('La fecha de devolución no puede ser anterior al día de hoy.');
+  }
+  if (fecha_prestamo && fecha_devolucion && fecha_devolucion < fecha_prestamo) {
+    errores.push('La fecha de devolución debe ser igual o posterior a la fecha de préstamo.');
+  }
+
+  return errores;
+};
+
 const Prestamos = () => {
   const [prestamos, setPrestamos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
@@ -64,11 +113,12 @@ const Prestamos = () => {
   const [cargando, setCargando] = useState(true);
   const [formData, setFormData] = useState({
     usuario_id: '',
-    fecha_prestamo: new Date().toISOString().split('T')[0],
-    fecha_devolucion: '',
+    fecha_prestamo: HOY,
+    fecha_devolucion: sumarDias(HOY, DIAS_SUGERIDOS),
     libros: [{ libro_id: '', cantidad: 1 }]
   });
   const [fechasEdicion, setFechasEdicion] = useState({ fecha_prestamo: '', fecha_devolucion: '' });
+  const [fechasOriginales, setFechasOriginales] = useState({ fecha_prestamo: '', fecha_devolucion: '' });
   const toasts = useToasts();
 
   useEffect(() => {
@@ -121,8 +171,8 @@ const Prestamos = () => {
     setErrorModal('');
     setFormData({
       usuario_id: '',
-      fecha_prestamo: new Date().toISOString().split('T')[0],
-      fecha_devolucion: '',
+      fecha_prestamo: HOY,
+      fecha_devolucion: sumarDias(HOY, DIAS_SUGERIDOS),
       libros: [{ libro_id: '', cantidad: 1 }]
     });
     setModalAbierto(true);
@@ -132,6 +182,10 @@ const Prestamos = () => {
     setErrorModal('');
     setPrestamoEditar(prestamo);
     setFechasEdicion({
+      fecha_prestamo: prestamo.fecha_prestamo,
+      fecha_devolucion: prestamo.fecha_devolucion
+    });
+    setFechasOriginales({
       fecha_prestamo: prestamo.fecha_prestamo,
       fecha_devolucion: prestamo.fecha_devolucion
     });
@@ -216,11 +270,37 @@ const Prestamos = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === 'fecha_prestamo') {
+      setFormData((prev) => {
+        const siguiente = { ...prev, fecha_prestamo: value };
+        if (!siguiente.fecha_devolucion || siguiente.fecha_devolucion < value) {
+          siguiente.fecha_devolucion = sumarDias(value, DIAS_SUGERIDOS);
+        }
+        return siguiente;
+      });
+      return;
+    }
+
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleFechaEdicionChange = (e) => {
-    setFechasEdicion({ ...fechasEdicion, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === 'fecha_prestamo') {
+      setFechasEdicion((prev) => {
+        const siguiente = { ...prev, fecha_prestamo: value };
+        if (!siguiente.fecha_devolucion || siguiente.fecha_devolucion < value) {
+          siguiente.fecha_devolucion = sumarDias(value, DIAS_SUGERIDOS);
+        }
+        return siguiente;
+      });
+      return;
+    }
+
+    setFechasEdicion({ ...fechasEdicion, [name]: value });
   };
 
   const handleAddLibro = () => {
@@ -245,6 +325,9 @@ const Prestamos = () => {
   };
 
   const inicial = (nombre) => (nombre || '?').charAt(0).toUpperCase();
+
+  const erroresFechasNuevo = validarFechasNuevo(formData);
+  const erroresFechasEdicion = validarFechasEdicion(fechasEdicion, fechasOriginales);
 
   return (
     <div className={styles.container}>
@@ -396,6 +479,7 @@ const Prestamos = () => {
                 name="fecha_prestamo"
                 value={fechasEdicion.fecha_prestamo}
                 onChange={handleFechaEdicionChange}
+                min={HOY}
                 required
               />
             </div>
@@ -406,16 +490,27 @@ const Prestamos = () => {
                 name="fecha_devolucion"
                 value={fechasEdicion.fecha_devolucion}
                 onChange={handleFechaEdicionChange}
+                min={HOY}
                 required
               />
             </div>
           </div>
 
+          {erroresFechasEdicion.length > 0 && (
+            <div className={styles.erroresFechas} role="alert">
+              {erroresFechasEdicion.map((msg) => (
+                <p key={msg}>
+                  <span className={styles.errorIcono}>⚠️</span> {msg}
+                </p>
+              ))}
+            </div>
+          )}
+
           <div className={styles.formActions}>
             <button type="button" className={styles.btnSecondary} onClick={handleCloseModals}>
               Cancelar
             </button>
-            <button type="submit" className={styles.btnPrimary}>
+            <button type="submit" className={styles.btnPrimary} disabled={erroresFechasEdicion.length > 0}>
               Guardar Cambios
             </button>
           </div>
@@ -452,6 +547,7 @@ const Prestamos = () => {
                 name="fecha_prestamo"
                 value={formData.fecha_prestamo}
                 onChange={handleChange}
+                min={HOY}
                 required
               />
             </div>
@@ -462,10 +558,21 @@ const Prestamos = () => {
                 name="fecha_devolucion"
                 value={formData.fecha_devolucion}
                 onChange={handleChange}
+                min={HOY}
                 required
               />
             </div>
           </div>
+
+          {erroresFechasNuevo.length > 0 && (
+            <div className={styles.erroresFechas} role="alert">
+              {erroresFechasNuevo.map((msg) => (
+                <p key={msg}>
+                  <span className={styles.errorIcono}>⚠️</span> {msg}
+                </p>
+              ))}
+            </div>
+          )}
 
           <div className={styles.librosSection}>
             <div className={styles.librosHeader}>
@@ -513,7 +620,7 @@ const Prestamos = () => {
             <button type="button" className={styles.btnSecondary} onClick={handleCloseModals}>
               Cancelar
             </button>
-            <button type="submit" className={styles.btnPrimary}>
+            <button type="submit" className={styles.btnPrimary} disabled={erroresFechasNuevo.length > 0}>
               Crear Préstamo
             </button>
           </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import AsistenteBiblioteca from '../AsistenteBiblioteca/AsistenteBiblioteca';
 import styles from './Layout.module.css';
 
 const Icono = {
@@ -354,6 +355,9 @@ const Layout = () => {
 
       {/* ===== Floating Dock ===== */}
       <FloatingDock items={menuItems} activo={location.pathname} onNavegar={(p) => navigate(p)} />
+
+      {/* ===== Asistente Virtual (Bibliotecario) ===== */}
+      <AsistenteBiblioteca />
 
       <CommandPalette
         items={menuItems}
