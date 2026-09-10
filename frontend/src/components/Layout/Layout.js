@@ -34,6 +34,12 @@ const Icono = {
       <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
     </svg>
   ),
+  lectura: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 6.2C10.4 4.6 8.1 4 4 4v14c4.1 0 6.4.6 8 2.2 1.6-1.6 3.9-2.2 8-2.2V4c-4.1 0-6.4.6-8 2.2z"/>
+      <path d="M12 6.2V20.2"/>
+    </svg>
+  ),
   perfil: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
@@ -80,6 +86,7 @@ const MENU_ADMIN = [
   { path: '/app', label: 'Inicio', icon: 'dashboard' },
   { path: '/app/usuarios', label: 'Usuarios', icon: 'usuarios' },
   { path: '/app/libros', label: 'Libros', icon: 'libros' },
+  { path: '/app/mis-lecturas', label: 'Mis Lecturas', icon: 'lectura' },
   { path: '/app/prestamos', label: 'Préstamos', icon: 'prestamos' },
   { path: '/app/mis-prestamos', label: 'Mis Préstamos', icon: 'misPrestamos' },
   { path: '/app/comunidad', label: 'Comunidad', icon: 'comunidad' },
@@ -89,6 +96,7 @@ const MENU_ADMIN = [
 const MENU_BIBLIOTECARIO = [
   { path: '/app', label: 'Inicio', icon: 'dashboard' },
   { path: '/app/libros', label: 'Libros', icon: 'libros' },
+  { path: '/app/mis-lecturas', label: 'Mis Lecturas', icon: 'lectura' },
   { path: '/app/prestamos', label: 'Préstamos', icon: 'prestamos' },
   { path: '/app/mis-prestamos', label: 'Mis Préstamos', icon: 'misPrestamos' },
   { path: '/app/comunidad', label: 'Comunidad', icon: 'comunidad' },
@@ -98,6 +106,7 @@ const MENU_BIBLIOTECARIO = [
 const MENU_USUARIO = [
   { path: '/app', label: 'Inicio', icon: 'dashboard' },
   { path: '/app/libros', label: 'Libros', icon: 'libros' },
+  { path: '/app/mis-lecturas', label: 'Mis Lecturas', icon: 'lectura' },
   { path: '/app/mis-prestamos', label: 'Mis Préstamos', icon: 'misPrestamos' },
   { path: '/app/comunidad', label: 'Comunidad', icon: 'comunidad' },
   { path: '/app/perfil', label: 'Perfil', icon: 'perfil' }
@@ -108,6 +117,7 @@ const TITULOS = {
   '/app/usuarios': 'Usuarios',
   '/app/libros': 'Libros',
   '/app/prestamos': 'Préstamos',
+  '/app/mis-lecturas': 'Mis Lecturas',
   '/app/mis-prestamos': 'Mis Préstamos',
   '/app/comunidad': 'Comunidad y Sugerencias',
   '/app/perfil': 'Perfil'

@@ -11,7 +11,8 @@ const COLORES = {
   admin: styles.dorado,
   bibliotecario: styles.esmeralda,
   user: styles.azul,
-  favorito: styles.violeta
+  favorito: styles.violeta,
+  suscripcion: styles.violeta
 };
 
 const ETIQUETAS = {
@@ -23,7 +24,8 @@ const ETIQUETAS = {
   agotado: 'Agotado',
   admin: 'Administrador',
   bibliotecario: 'Bibliotecario',
-  user: 'Usuario'
+  user: 'Usuario',
+  suscripcion: 'Suscripción'
 };
 
 function Badge({ tipo, children }) {

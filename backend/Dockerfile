@@ -9,6 +9,9 @@ RUN npm ci --omit=dev
 # Código de la aplicación
 COPY . .
 
+# Directorio de archivos digitales (PDF/EPUB)
+RUN mkdir -p /app/uploads
+
 EXPOSE 4000
 
 # Espera a la BD, crea el admin y arranca el servidor

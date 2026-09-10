@@ -20,4 +20,10 @@ Thumbs.db
 *.log
 
 # Base de datos local
-database/*.sql.bakngrok.exe
+database/*.sql.bak
+
+# Ejecutable externo (no versionar)
+ngrok.exe
+
+# Archivos de libros digitales (se generan con los scripts de backend/src/scripts)
+backend/uploads/

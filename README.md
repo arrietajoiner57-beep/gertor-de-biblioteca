@@ -21,8 +21,10 @@ Incluye reportes **PDF/Excel**, notificaciones en **tiempo real** (Socket.IO), *
 │       ├── models/          → Consultas SQL (usuario, libro, prestamo, detalle)
 │       ├── controllers/     → Lógica (auth, usuario, libro, prestamo, reporte)
 │       ├── routes/          → Rutas protegidas por rol (+ reporteRoutes)
-│       ├── scripts/         → createAdmin.js (seed del administrador)
+│       ├── scripts/         → createAdmin, generadores de PDF/textos y descarga
+│       │                      de clásicos (los archivos quedan en uploads/)
 │       └── utils/           → libroQuery.js (búsqueda reutilizable y testeable)
+│   ├── uploads/             → PDFs/textos de libros digitales (NO se versiona)
 │   └── test/                → Pruebas unitarias (node --test)
 ├── frontend/                → Aplicación React (Create React App)
 │   ├── Dockerfile           → Multi-etapa: build React → nginx
@@ -30,9 +32,10 @@ Incluye reportes **PDF/Excel**, notificaciones en **tiempo real** (Socket.IO), *
 │   └── src/
 │       ├── context/         → AuthContext, ToastContext, SocketContext
 │       ├── components/      → Layout, Table, Modal, Badge, BookCover,
-│       │                      ExportButtons, ProtectedRoute
+│       │                      ExportButtons, ProtectedRoute, LectorDigital
 │       ├── pages/           → Landing, Login, Inicio, Usuarios, Libros,
-│       │                      Prestamos, MisPrestamos, Perfil, Registro
+│       │                      Prestamos, MisPrestamos, Perfil, Registro,
+│       │                      LectorLibro, MisLecturas
 │       └── services/api.js  → Cliente axios con token automático
 ├── database/
 │   ├── schema.sql           → Creación completa de la BD + datos de prueba
@@ -67,6 +70,9 @@ Incluye reportes **PDF/Excel**, notificaciones en **tiempo real** (Socket.IO), *
 - **Control de stock automático** y **detección de vencidos** por fecha.
 - **Docker Compose** listo para levantar la app completa con un solo comando.
 - **Pruebas unitarias** del backend con el test runner nativo de Node.
+- **Lectura digital** integrada: lector a pantalla completa, seguimiento de progreso,
+  sección "Mis Lecturas" y **traducción de la lectura a 7 idiomas** con navegación de
+  todas las páginas.
 
 ---
 
@@ -204,6 +210,14 @@ La autorización se aplica en el **backend** (JWT + middleware), no solo ocultan
 | GET/PUT/DELETE | /api/usuarios/:id | Admin | Leer / editar / eliminar usuario |
 | GET | /api/libros?q= | Autenticado | Catálogo con búsqueda por texto |
 | POST/PUT/DELETE | /api/libros/:id | Bibliotecario/admin | Crear / editar / eliminar libro |
+| GET | /api/libros/:id/lectura | Autenticado | Stream del PDF/EPUB (solo con préstamo activo o suscripción) |
+| GET | /api/libros/:id/acceso | Autenticado | ¿Puede leer este libro? (`permitido` + `es_digital`) |
+| GET | /api/libros/:id/texto?pagina=N | Autenticado | Texto de una página para la traducción (misma protección) |
+| POST | /api/libros/upload | Bibliotecario/admin | Subir PDF/EPUB con conteo automático de páginas |
+| GET | /api/lectura/:libroId/progreso | Autenticado | Progreso de lectura del usuario en un libro |
+| POST | /api/lectura/:libroId/progreso | Autenticado | Guardar progreso (página, % y minutos) |
+| GET | /api/lectura/stats | Autenticado | Minutos, libros completados y racha del usuario |
+| GET | /api/lectura/mis-libros | Autenticado | Libros en préstamo con progreso y accesibilidad |
 | POST | /api/prestamos/solicitar | Autenticado | Solicitar un préstamo (queda pendiente) |
 | GET | /api/prestamos/mis | Autenticado | Préstamos del usuario actual |
 | GET | /api/prestamos?estado= | Bibliotecario/admin | Todos los préstamos |
@@ -212,6 +226,70 @@ La autorización se aplica en el **backend** (JWT + middleware), no solo ocultan
 | PUT | /api/prestamos/:id/devolver | Bibliotecario/admin | Registrar devolución (restaura stock) |
 | GET | /api/reportes/:seccion/:formato | Admin | Excel/PDF de préstamos, usuarios o libros |
 | GET | /api/health | Público | Estado del servidor y la BD |
+
+---
+
+## Lector digital y traducción
+
+La biblioteca permite **leer libros 100 % digitales** dentro de la misma web. Los libros
+marcados como digitales (`es_digital = 1`) tienen un archivo PDF (o EPUB) en `backend/uploads/`
+y se abren en un lector a pantalla completa.
+
+### Acceso a la lectura
+
+Para poder leer un libro digital el usuario debe tener **un préstamo activo** o una
+**suscripción activa** (el administrador tiene una suscripción de prueba y puede leerlo todo).
+El acceso se comprueba siempre en el backend:
+
+- `GET /api/libros/:id/acceso` → indica `permitido` y `es_digital`.
+- El stream de lectura y el endpoint de texto devuelven **403** si no hay acceso.
+
+En el catálogo, al pulsar **"Leer"** sin acceso se muestra un aviso con el botón
+**"Solicitar préstamo"**. Los libros ya prestados se agrupan en la sección
+**"Mis Lecturas"**, desde donde se abre la lectura con un solo clic.
+
+### Mis Lecturas
+
+Página (`/app/mis-lecturas`) que muestra todos los libros que el usuario tiene en préstamo
+con:
+
+- Portada, título, autor y procedencia del acceso (préstamo / suscripción).
+- Barra de progreso de lectura ("Sin empezar", porcentaje o "Libro completo").
+- Botón **"Leer ahora / Continuar leyendo"** según el progreso.
+- Fecha de devolución e historial de préstamos anteriores.
+- Banner indicando si hay una suscripción activa.
+
+### La traducción de la lectura
+
+Junto a los controles de tema, fuente y tamaño, la barra del lector tiene un botón de
+**idioma 🌐** que traduce la lectura a **español, inglés, francés, portugués, alemán,
+italiano o ruso**.
+
+- El texto original de cada libro se guarda como `.txt` en `backend/uploads/textos/` y se
+  divide en páginas del mismo modo que el PDF (mismo número de páginas).
+- Al elegir idioma, la **página en curso** se traduce y se muestra en la interfaz normal de
+  lectura (igual que el PDF original), con botones **anterior / siguiente**, indicador
+  "Página X de Y" y un campo **"Ir a página"** para recorrer todo el libro traducido.
+- Se puede alternar entre **"Ver original" / "Ver traducido"** sin salir de la página.
+- La traducción usa el **servicio gratuito de Google Translate** (sin clave API), requiere
+  conexión a internet y se guarda en **caché por página** para volver a lectura instantánea.
+- Con la traducción activa, la **lectura en voz alta** lee el texto en el idioma elegido.
+
+### Generar los archivos de los libros digitales
+
+Los PDFs y textos **no se versionan** (están en `backend/uploads/`, ignorados por git).
+Se regeneran con los scripts de `backend/src/scripts/` (desde la carpeta `backend`):
+
+```
+node src/scripts/guardarTextosClasicos.js            # .txt de los 30 clásicos
+node src/scripts/descargarClasicos.js                # PDF real de texto (los 30 o __SOLO_ID__)
+node src/scripts/descargarClasicos.js 2              # solo el libro con id 2
+node src/scripts/generarLibrosDemo.js                # PDFs de demostración
+```
+
+Los clásicos (Don Quijote, Crimen y castigo, Drácula, etc.) se descargan de
+Project Gutenberg vía gutendex, priorizando el español. Obras modernas con derechos de
+autor solo pueden subirse manualmente con `POST /api/libros/upload` desde el editor del libro.
 
 ---
 
@@ -232,3 +310,8 @@ La autorización se aplica en el **backend** (JWT + middleware), no solo ocultan
 - Un préstamo activo cuya fecha límite pasó se muestra automáticamente como **Vencido**.
 - No se puede prestar más que el stock disponible ni eliminar usuarios/préstamos con
   préstamos activos.
+- Los **libros digitales** se transmiten por HTTP en modo *stream* (soporta peticiones de
+  rango `Range`) y el iframe usa la autenticación por `?token=`, ya que los navegadores no
+  envían la cabecera `Authorization` en los iframes.
+- Las bases de datos `detalle_prestamo`, `lectura_sesion`, `progreso_lectura` y `resena`
+  borran en cascada al eliminar un libro; los préstamos huérfanos deben limpiarse aparte.

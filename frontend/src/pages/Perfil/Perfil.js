@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Badge from '../../components/Badge/Badge';
 import { useAuth } from '../../context/AuthContext';
-import { cambiarContrasena, mensajeError } from '../../services/api';
+import { cambiarContrasena, getStatsLectura, mensajeError } from '../../services/api';
 import styles from './Perfil.module.css';
 
 const iniciales = (nombre) =>
@@ -87,6 +87,13 @@ const Perfil = () => {
     emailNotis: true,
     resumenSemanal: false
   });
+  const [statsLectura, setStatsLectura] = useState(null);
+
+  useEffect(() => {
+    getStatsLectura()
+      .then((res) => setStatsLectura(res.data))
+      .catch(() => {});
+  }, []);
 
   const gamificacion = useMemo(() => {
     let dias = 0;
@@ -267,6 +274,57 @@ const Perfil = () => {
       </section>
 
       <div className={styles.grillaPerfil}>
+        {/* ===== Estadísticas de lectura ===== */}
+        <section className={styles.tarjeta}>
+          <h2 className={styles.subtitulo}>
+            <span>📚</span> Mi actividad lectora
+          </h2>
+          {statsLectura ? (
+            <div className={styles.lecturaStats}>
+              <div className={styles.statCard}>
+                <span className={styles.statIcono}>⏱️</span>
+                <div>
+                  <strong>{statsLectura.totalMinutos.toLocaleString('es-ES')} min</strong>
+                  <small>Tiempo total leyendo</small>
+                </div>
+              </div>
+              <div className={styles.statCard}>
+                <span className={styles.statIcono}>🏆</span>
+                <div>
+                  <strong>{statsLectura.librosCompletados}</strong>
+                  <small>Libros completados</small>
+                </div>
+              </div>
+              <div className={styles.statCard}>
+                <span className={styles.statIcono}>🔥</span>
+                <div>
+                  <strong>{statsLectura.rachaActual} día{statsLectura.rachaActual === 1 ? '' : 's'}</strong>
+                  <small>Racha actual</small>
+                </div>
+              </div>
+              {statsLectura.librosEnProgreso && statsLectura.librosEnProgreso.length > 0 && (
+                <div className={styles.lecturaEnCurso}>
+                  <strong className={styles.lecturaEnCursoTitulo}>En progreso</strong>
+                  {statsLectura.librosEnProgreso.slice(0, 3).map((libro) => (
+                    <div key={libro.libro_id} className={styles.libroProgreso}>
+                      <span className={styles.libroProgresoTitulo}>{libro.titulo}</span>
+                      <div className={styles.progressBar}>
+                        <div
+                          className={styles.progressFill}
+                          style={{ width: `${Math.min(100, libro.porcentaje_avance)}%` }}
+                        />
+                      </div>
+                      <span className={styles.progressLabel}>{libro.porcentaje_avance.toFixed(0)}%</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className={styles.notaAdmin}>Cargando estadísticas de lectura...</p>
+          )}
+        </section>
+
         {/* ===== Medallas ===== */}
         <section className={styles.tarjeta}>
           <h2 className={styles.subtitulo}>

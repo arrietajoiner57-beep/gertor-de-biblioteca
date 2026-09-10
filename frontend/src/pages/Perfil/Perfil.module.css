@@ -630,3 +630,98 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* ===== Estadísticas de lectura ===== */
+.lecturaStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 560px) {
+  .lecturaStats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: var(--color-surface-warm);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius);
+}
+
+.statIcono {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.statCard strong {
+  display: block;
+  color: var(--color-heading);
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.statCard small {
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+}
+
+.lecturaEnCurso {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.lecturaEnCursoTitulo {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin-bottom: 10px;
+}
+
+.libroProgreso {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.libroProgresoTitulo {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.progressBar {
+  width: 80px;
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--color-emerald);
+  border-radius: 99px;
+  transition: width 0.3s;
+}
+
+.progressLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-emerald);
+  min-width: 32px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

@@ -22,6 +22,7 @@ app.use('/api/prestamos', require('./routes/prestamoRoutes'));
 app.use('/api/reportes', require('./routes/reporteRoutes'));
 app.use('/api/resenas', require('./routes/resenaRoutes'));
 app.use('/api/sugerencias', require('./routes/sugerenciaRoutes'));
+app.use('/api/lectura', require('./routes/lecturaRoutes'));
 
 // ============================================
 // Endpoints Públicos (sin autenticación)
@@ -173,13 +174,39 @@ app.get('/api/stats/me', verifyToken, async (req, res) => {
       GROUP BY p.id ORDER BY proxima_entrega ASC LIMIT 1
     `, [id]);
 
+    const [minutosLectura] = await pool.query(
+      'SELECT COALESCE(SUM(minutos), 0) AS total FROM lectura_sesion WHERE usuario_id = ?', [id]
+    );
+    const [librosCompletados] = await pool.query(
+      'SELECT COUNT(*) AS total FROM progreso_lectura WHERE usuario_id = ? AND porcentaje_avance >= 100', [id]
+    );
+
+    let racha = 0;
+    const cursor = new Date();
+    cursor.setHours(0, 0, 0, 0);
+    for (let i = 0; i < 365; i++) {
+      const fechaStr = cursor.toISOString().split('T')[0];
+      const [check] = await pool.query(
+        'SELECT id FROM lectura_sesion WHERE usuario_id = ? AND fecha = ? LIMIT 1',
+        [id, fechaStr]
+      );
+      if (check.length === 0) break;
+      racha++;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+
     res.json({
       prestamosActivos: activos[0].total,
       prestamosVencidos: vencidos[0].total,
       prestamosDevueltos: devueltos[0].total,
       librosPrestados: Number(librosPrestados[0].total),
       proximaEntrega: proximas.length ? proximas[0].proxima_entrega : null,
-      historial
+      historial,
+      lectura: {
+        totalMinutos: Number(minutosLectura[0].total),
+        librosCompletados: librosCompletados[0].total,
+        rachaActual: racha
+      }
     });
   } catch (error) {
     res.status(500).json({ message: 'No se pudo obtener tu información' });

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Modal from '../../components/Modal/Modal';
 import Badge from '../../components/Badge/Badge';
 import BookCover from '../../components/BookCover/BookCover';
@@ -13,6 +14,8 @@ import {
   updateLibro,
   deleteLibro,
   solicitarPrestamo,
+  subirArchivoLibro,
+  getAccesoLectura,
   mensajeError
 } from '../../services/api';
 import { CATALOGO_DEMO } from '../../data/catalogoDemo';
@@ -26,7 +29,11 @@ const LIBRO_VACIO = {
   anio_publicacion: '',
   genero: '',
   cantidad_disponible: 1,
-  portada: ''
+  portada: '',
+  archivo_url: '',
+  es_digital: 1,
+  formato: 'pdf',
+  paginas: ''
 };
 
 const FAV_KEY = 'biblioteca_favoritos';
@@ -129,6 +136,9 @@ const Libros = () => {
   const [cantidadSolicitar, setCantidadSolicitar] = useState(1);
   const [errorSolicitar, setErrorSolicitar] = useState('');
   const [formData, setFormData] = useState(LIBRO_VACIO);
+  const [subiendoArchivo, setSubiendoArchivo] = useState(false);
+  const [libroSinAcceso, setLibroSinAcceso] = useState(null);
+  const [sinAccesoAbierto, setSinAccesoAbierto] = useState(false);
   const [favoritos, setFavoritos] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(FAV_KEY)) || [];
@@ -139,6 +149,7 @@ const Libros = () => {
   const buscadorRef = useRef(null);
   const { puedeGestionarCatalogo } = useAuth();
   const toasts = useToasts();
+  const navigate = useNavigate();
 
   /* Catálogo: solo libros reales de la base de datos.
      La ficha demo solo aporta datos de presentación (sinopsis, páginas, rating),
@@ -159,6 +170,8 @@ const Libros = () => {
   const libroDestacado = useMemo(() => {
     return (
       catalogo.find((l) => l.destacado && !l._demo) ||
+      catalogo.find((l) => l.es_digital !== 0 && l.archivo_url && l.portada) ||
+      catalogo.find((l) => l.es_digital !== 0 && l.archivo_url) ||
       catalogo.find((l) => l.portada) ||
       catalogo[0] ||
       null
@@ -238,7 +251,11 @@ const Libros = () => {
         anio_publicacion: book.anio_publicacion || '',
         genero: book.genero || '',
         cantidad_disponible: book.cantidad_disponible,
-        portada: book.portada || ''
+        portada: book.portada || '',
+        archivo_url: book.archivo_url || '',
+        es_digital: book.es_digital,
+        formato: book.formato || 'pdf',
+        paginas: book.paginas || ''
       });
     } else {
       setCurrentBook(null);
@@ -302,6 +319,21 @@ const Libros = () => {
     }
   };
 
+  const irALeer = async (libro) => {
+    try {
+      const response = await getAccesoLectura(libro.id);
+      if (response.data.permitido) {
+        navigate(`/app/lector/${libro.id}`);
+        return;
+      }
+      setLibroSinAcceso(libro);
+      setSinAccesoAbierto(true);
+    } catch (error) {
+      setLibroSinAcceso(libro);
+      setSinAccesoAbierto(true);
+    }
+  };
+
   const handleOpenSolicitar = (book) => {
     setLibroSolicitar(book);
     setCantidadSolicitar(1);
@@ -338,11 +370,38 @@ const Libros = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: name === 'cantidad_disponible' ? parseInt(value) || 0 : value
+      [name]: type === 'checkbox'
+        ? (checked ? 1 : 0)
+        : name === 'cantidad_disponible'
+          ? parseInt(value) || 0
+          : value
     });
+  };
+
+  const handleArchivoChange = async (e) => {
+    const archivo = e.target.files && e.target.files[0];
+    if (!archivo) return;
+
+    setSubiendoArchivo(true);
+    try {
+      const response = await subirArchivoLibro(archivo);
+      const data = response.data;
+      setFormData((prev) => ({
+        ...prev,
+        archivo_url: data.archivo_url,
+        formato: data.formato,
+        paginas: data.paginas || prev.paginas
+      }));
+      toasts.exito('Archivo subido correctamente');
+    } catch (error) {
+      toasts.error(mensajeError(error));
+    } finally {
+      setSubiendoArchivo(false);
+      e.target.value = '';
+    }
   };
 
   return (
@@ -383,17 +442,30 @@ const Libros = () => {
                 <Stars valor={Number(libroDestacado.rating) || 0} />
                 <Badge tipo={libroDestacado.cantidad_disponible > 0 ? 'disponible' : 'agotado'} />
               </div>
-              {!puedeGestionarCatalogo && libroDestacado.cantidad_disponible > 0 && (
-                <button
-                  className={styles.reservarBtn}
-                  onClick={() => handleOpenSolicitar(libroDestacado)}
-                >
-                  Solicitar préstamo
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </button>
-              )}
+              <div className={styles.heroAcciones}>
+                {libroDestacado.es_digital !== 0 && libroDestacado.archivo_url && (
+                  <button
+                    className={styles.heroLeerBtn}
+                    onClick={() => irALeer(libroDestacado)}
+                  >
+                    Leer ahora
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                )}
+                {!puedeGestionarCatalogo && libroDestacado.cantidad_disponible > 0 && (
+                  <button
+                    className={styles.reservarBtn}
+                    onClick={() => handleOpenSolicitar(libroDestacado)}
+                  >
+                    Solicitar préstamo
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </section>
@@ -543,6 +615,17 @@ const Libros = () => {
                     </svg>
                     Vista previa
                   </button>
+                  {libro.es_digital !== 0 && libro.archivo_url && (
+                    <button
+                      className={`${styles.quickBtn} ${styles.quickLeer}`}
+onClick={() => irALeer(libro)}
+                        >
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                          </svg>
+                          Leer
+                        </button>
+                  )}
                   {puedeGestionarCatalogo ? (
                     <>
                       <button
@@ -610,6 +693,9 @@ const Libros = () => {
               </div>
               <div className={styles.shelfAcciones}>
                 <button className={styles.quickBtn} onClick={() => verDetalle(libro)}>Ver</button>
+                {libro.es_digital !== 0 && libro.archivo_url && (
+                  <button className={`${styles.quickBtn} ${styles.quickLeer}`} onClick={() => irALeer(libro)}>Leer</button>
+                )}
                 {puedeGestionarCatalogo ? (
                   <>
                     <button className={`${styles.quickBtn} ${styles.quickEditar}`} onClick={() => handleOpenModal(libro)}>Editar</button>
@@ -668,6 +754,18 @@ const Libros = () => {
                   {detalle.cantidad_disponible} ejemplares disponibles
                 </span>
               </div>
+              {detalle.es_digital !== 0 && detalle.archivo_url && (
+                <button
+                  className={styles.reservarBtn}
+                  style={{ background: 'var(--color-emerald)', marginRight: 8 }}
+                  onClick={() => {
+setDetalleAbierto(false);
+                        irALeer(detalle);
+                  }}
+                >
+                  Leer ahora
+                </button>
+              )}
               {!puedeGestionarCatalogo && detalle.cantidad_disponible > 0 && (
                 <button
                   className={styles.reservarBtn}
@@ -686,6 +784,43 @@ const Libros = () => {
             <Resenas libroId={detalle.id} />
           </div>
           </>
+        )}
+      </Modal>
+
+      {/* ===== Modal sin acceso de lectura ===== */}
+      <Modal
+        isOpen={sinAccesoAbierto}
+        onClose={() => setSinAccesoAbierto(false)}
+        title="Necesitas un préstamo"
+      >
+        {libroSinAcceso && (
+          <div className={styles.sinAccesoWrap}>
+            <div className={styles.sinAccesoIcono}>🔒</div>
+            <p className={styles.sinAccesoTitulo}>
+              «{libroSinAcceso.titulo}» aún no está disponible para leer
+            </p>
+            <p className={styles.sinAccesoTexto}>
+              Para leer este libro debes solicitarlo como préstamo. Cuando tu solicitud
+              esté activa, aparecerá en <strong>Mis Lecturas</strong> y podrás abrirlo
+              directamente desde ahí.
+            </p>
+            <button
+              className={styles.btnSinAccesoSolicitar}
+              onClick={() => {
+                setSinAccesoAbierto(false);
+                handleOpenSolicitar(libroSinAcceso);
+              }}
+            >
+              Solicitar préstamo
+            </button>
+            <button
+              type="button"
+              className={styles.btnSecondary}
+              onClick={() => setSinAccesoAbierto(false)}
+            >
+              Cerrar
+            </button>
+          </div>
         )}
       </Modal>
 
@@ -794,6 +929,64 @@ const Libros = () => {
               </div>
             )}
           </div>
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxRow}>
+              <input
+                type="checkbox"
+                name="es_digital"
+                checked={formData.es_digital === 1 || formData.es_digital === true}
+                onChange={handleChange}
+              />
+              <span>Disponible como libro digital (lectura en línea)</span>
+            </label>
+          </div>
+          {formData.es_digital === 1 || formData.es_digital === true ? (
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label>Archivo digital (PDF/EPUB)</label>
+                <input
+                  type="file"
+                  accept=".pdf,.epub"
+                  onChange={handleArchivoChange}
+                />
+                {subiendoArchivo && <small className={styles.ayudaCampo}>Subiendo archivo…</small>}
+                {formData.archivo_url && (
+                  <small className={styles.ayudaCampo}>
+                    Archivo actual: <code>{formData.archivo_url}</code>
+                    {!subiendoArchivo && (
+                      <button
+                        type="button"
+                        className={styles.quitarArchivoBtn}
+                        onClick={() => {
+                          setFormData((prev) => ({ ...prev, archivo_url: '', formato: '' }));
+                        }}
+                      >
+                        quitar
+                      </button>
+                    )}
+                  </small>
+                )}
+              </div>
+              <div className={styles.formGroup}>
+                <label>Formato</label>
+                <select name="formato" value={formData.formato} onChange={handleChange} disabled={subiendoArchivo}>
+                  <option value="pdf">PDF</option>
+                  <option value="epub">EPUB</option>
+                </select>
+              </div>
+              <div className={styles.formGroup}>
+                <label>Número de páginas</label>
+                <input
+                  type="number"
+                  name="paginas"
+                  value={formData.paginas}
+                  onChange={handleChange}
+                  min="1"
+                  placeholder="ej. 320"
+                />
+              </div>
+            </div>
+          ) : null}
           <div className={styles.formActions}>
             <button type="button" className={styles.btnSecondary} onClick={handleCloseModal}>
               Cancelar

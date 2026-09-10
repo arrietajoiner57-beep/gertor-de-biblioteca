@@ -43,6 +43,8 @@ services:
         condition: service_healthy
     ports:
       - "4000:4000"
+    volumes:
+      - ./backend/uploads:/app/uploads
     # socket.io necesita exponer el puerto 4000 (ya arriba)
 
   frontend:

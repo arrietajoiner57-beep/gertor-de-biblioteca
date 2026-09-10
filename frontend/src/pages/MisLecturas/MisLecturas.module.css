@@ -1,0 +1,346 @@
+.container {
+  padding: 28px 32px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 1.7rem;
+  color: var(--color-text);
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+.btnCatalogo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btnCatalogo:hover {
+  border-color: var(--color-emerald);
+  color: var(--color-emerald);
+  transform: translateY(-1px);
+}
+
+.bannerSuscripcion {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(79, 70, 229, 0.08));
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  border-radius: 16px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+}
+
+.badgeSus {
+  font-size: 1.6rem;
+  color: #7c3aed;
+}
+
+.bannerSuscripcion strong {
+  color: var(--color-text);
+  display: block;
+}
+
+.bannerSuscripcion p {
+  margin: 2px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.87rem;
+}
+
+.errorMsg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: var(--color-rojo, #dc2626);
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.cargando {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 80px 0;
+  color: var(--color-text-muted);
+}
+
+.spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-emerald);
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  to { transform: rotate(360deg); }
+}
+
+.vacio {
+  text-align: center;
+  padding: 70px 20px;
+  background: var(--color-surface);
+  border: 1.5px dashed var(--color-border);
+  border-radius: 20px;
+}
+
+.vacioIcono {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.vacio h3 {
+  margin: 0 0 6px;
+  color: var(--color-text);
+  font-size: 1.15rem;
+}
+
+.vacio p {
+  margin: 0 auto 20px;
+  color: var(--color-text-muted);
+  max-width: 430px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.btnPrincipal {
+  padding: 12px 26px;
+  border-radius: var(--radius-full);
+  background: var(--color-emerald);
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-md);
+}
+
+.btnPrincipal:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 22px;
+}
+
+.tarjeta {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjeta:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-emerald);
+}
+
+.portadaWrap {
+  position: relative;
+  padding: 20px 16px 0;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(180deg, var(--color-accent-soft), transparent 70%);
+}
+
+.pctBurbuja {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--color-emerald);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 4px 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjetaBody {
+  flex: 1;
+  padding: 16px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tarjetaTitulo {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text);
+  line-height: 1.25;
+  min-height: 40px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tarjetaAutor {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tarjetaMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.fechaOk {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.fechaHoy {
+  font-size: 0.72rem;
+  color: var(--color-amarillo, #d97706);
+  font-weight: 700;
+}
+
+.barraWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.barraTrack {
+  flex: 1;
+  height: 8px;
+  background: var(--color-surface-warm);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barraFill {
+  height: 100%;
+  background: linear-gradient(90deg, #34d399, #10b981);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.barraTexto {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.btnLeer {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.btnLeer:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.historial {
+  margin-top: 40px;
+}
+
+.historialTitulo {
+  font-size: 1.15rem;
+  color: var(--color-text);
+  margin-bottom: 14px;
+}
+
+.historialLista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.historialFila {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: 14px;
+  padding: 10px 16px;
+}
+
+.historialInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.historialInfo strong {
+  display: block;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historialInfo small {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}

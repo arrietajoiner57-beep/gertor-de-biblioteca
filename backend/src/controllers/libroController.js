@@ -8,6 +8,22 @@ function sanitizeLibro(data) {
   if (clean.cantidad_disponible !== undefined) {
     clean.cantidad_disponible = parseInt(clean.cantidad_disponible) || 0;
   }
+  if (clean.es_digital !== undefined) {
+    clean.es_digital = clean.es_digital === 1 || clean.es_digital === true || clean.es_digital === '1' ? 1 : 0;
+  }
+  if (clean.formato && !['pdf', 'epub'].includes(clean.formato)) {
+    clean.formato = 'pdf';
+  }
+  if (clean.paginas !== undefined) {
+    clean.paginas = parseInt(clean.paginas) || null;
+  }
+  if ((clean.archivo_url === '' || clean.archivo_url === undefined)) {
+    clean.archivo_url = null;
+  }
+  if (clean.es_digital === 0) {
+    clean.archivo_url = null;
+    clean.formato = null;
+  }
   return clean;
 }
 
@@ -66,6 +82,41 @@ const libroController = {
       res.json({ message: 'Libro eliminado' });
     } catch (error) {
       res.status(500).json({ message: 'Error al eliminar libro', error: error.message });
+    }
+  },
+
+  subirArchivo: async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'No se recibió ningún archivo' });
+      }
+
+      const fs = require('fs');
+      const extension = require('path').extname(req.file.originalname).toLowerCase();
+      const formato = extension === '.epub' ? 'epub' : 'pdf';
+
+      let paginas = null;
+      if (formato === 'pdf') {
+        try {
+          const buffer = fs.readFileSync(req.file.path);
+          const texto = buffer.toString('latin1');
+          const coincidencias = texto.match(/\/Type\s*\/Page\b/g) || [];
+          const excluidas = texto.match(/\/Type\s*\/Pages\b/g) || [];
+          const conteo = coincidencias.length - excluidas.length;
+          if (conteo > 0) paginas = conteo;
+        } catch (e) {
+          paginas = null;
+        }
+      }
+
+      res.json({
+        archivo_url: req.file.filename,
+        nombre_original: req.file.originalname,
+        formato,
+        paginas
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Error al subir el archivo', error: error.message });
     }
   }
 };

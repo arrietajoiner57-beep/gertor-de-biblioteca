@@ -4,12 +4,15 @@ const SECRET = process.env.JWT_SECRET || 'secreto-desarrollo-cambiar';
 
 function verifyToken(req, res, next) {
   const header = req.headers.authorization;
+  const queryToken = req.query && req.query.token;
 
-  if (!header || !header.startsWith('Bearer ')) {
+  const token = header && header.startsWith('Bearer ')
+    ? header.split(' ')[1]
+    : queryToken;
+
+  if (!token) {
     return res.status(401).json({ message: 'No has iniciado sesión', code: 'NO_TOKEN' });
   }
-
-  const token = header.split(' ')[1];
 
   try {
     const decoded = jwt.verify(token, SECRET);

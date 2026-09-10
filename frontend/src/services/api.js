@@ -87,6 +87,26 @@ export const crearResena = (data) => api.post('/resenas', data);
 export const toggleLikeResena = (id) => api.post(`/resenas/${id}/like`);
 export const eliminarResena = (id) => api.delete(`/resenas/${id}`);
 
+export const getProgresoLectura = (libroId) => api.get(`/lectura/${libroId}/progreso`);
+export const saveProgresoLectura = (libroId, data) => api.post(`/lectura/${libroId}/progreso`, data);
+export const getStatsLectura = () => api.get('/lectura/stats');
+export const registrarTiempoLectura = (data) => api.post('/lectura/tiempo', data);
+export const getMisLibros = () => api.get('/lectura/mis-libros');
+export const getAccesoLectura = (libroId) => api.get(`/libros/${libroId}/acceso`);
+export const getTextoLibro = (libroId, pagina) => api.get(`/libros/${libroId}/texto`, { params: { pagina } });
+
+export const getLibroLecturaUrl = (libroId) => {
+  const token = localStorage.getItem(TOKEN_KEY) || '';
+  const separador = token ? '?token=' : '';
+  return `${API_URL}/libros/${libroId}/lectura${separador}${encodeURIComponent(token)}`;
+};
+
+export const subirArchivoLibro = (archivo) => {
+  const fd = new FormData();
+  fd.append('archivo', archivo);
+  return api.post('/libros/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+};
+
 export const getSugerencias = () => api.get('/sugerencias');
 export const crearSugerencia = (data) => api.post('/sugerencias', data);
 export const votarSugerencia = (id) => api.post(`/sugerencias/${id}/votar`);

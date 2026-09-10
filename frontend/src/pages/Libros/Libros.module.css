@@ -222,6 +222,91 @@
   transform: none;
 }
 
+.heroAcciones {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.heroLeerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 24px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-md);
+}
+
+.heroLeerBtn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+
+.sinAccesoWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 8px 4px 4px;
+}
+
+.sinAccesoIcono {
+  font-size: 2.6rem;
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-warm);
+  border-radius: 50%;
+}
+
+.sinAccesoTitulo {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.sinAccesoTexto {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  max-width: 400px;
+}
+
+.btnSinAccesoSolicitar {
+  width: 100%;
+  padding: 13px 24px;
+  border-radius: 12px;
+  background: var(--color-emerald);
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.btnSinAccesoSolicitar:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
 /* ===== Toolbar ===== */
 .toolbar {
   display: flex;
@@ -664,6 +749,18 @@
   border-color: var(--color-danger);
 }
 
+.quickLeer {
+  background: var(--color-blue-tint);
+  border-color: rgba(29, 78, 216, 0.3);
+  color: var(--color-blue);
+}
+
+.quickLeer:hover {
+  background: var(--color-blue);
+  color: #fff;
+  border-color: var(--color-blue);
+}
+
 .quickSolicitar {
   background: var(--color-emerald-tint);
   border-color: rgba(21, 128, 61, 0.3);
@@ -1004,6 +1101,59 @@
   outline: none;
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  flex-direction: row !important;
+}
+
+.checkboxRow input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-emerald);
+}
+
+.ayudaCampo {
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.ayudaCampo code {
+  background: var(--color-surface-warm);
+  border: 1px solid var(--color-border-light);
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+
+.quitarArchivoBtn {
+  margin-left: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-emerald);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.76rem;
+  text-decoration: underline;
+}
+
+.formGroup select {
+  padding: 11px 14px;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.92rem;
+  transition: all var(--transition);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .formRow {

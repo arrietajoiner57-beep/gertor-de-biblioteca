@@ -13,8 +13,10 @@ import Usuarios from './pages/Usuarios/Usuarios';
 import Libros from './pages/Libros/Libros';
 import Prestamos from './pages/Prestamos/Prestamos';
 import MisPrestamos from './pages/MisPrestamos/MisPrestamos';
+import MisLecturas from './pages/MisLecturas/MisLecturas';
 import Perfil from './pages/Perfil/Perfil';
 import Comunidad from './pages/Comunidad/Comunidad';
+import LectorLibro from './pages/LectorLibro/LectorLibro';
 import AccesoDenegado from './pages/AccesoDenegado/AccesoDenegado';
 import './App.css';
 
@@ -56,11 +58,21 @@ function App() {
                   }
                 />
                 <Route path="mis-prestamos" element={<MisPrestamos />} />
+                <Route path="mis-lecturas" element={<MisLecturas />} />
                 <Route path="comunidad" element={<Comunidad />} />
                 <Route path="perfil" element={<Perfil />} />
                 <Route path="acceso-denegado" element={<AccesoDenegado />} />
                 <Route path="*" element={<AccesoDenegado />} />
               </Route>
+
+              <Route
+                path="/app/lector/:libroId"
+                element={
+                  <ProtectedRoute>
+                    <LectorLibro />
+                  </ProtectedRoute>
+                }
+              />
 
               <Route path="*" element={<Landing />} />
             </Routes>
