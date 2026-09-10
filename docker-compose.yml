@@ -12,10 +12,10 @@ services:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
-      # Inicializacion automatica la primera vez (orden alfabetico)
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./database/migration_pendiente_status.sql:/docker-entrypoint-initdb.d/02-estado_pendiente.sql:ro
-      - ./database/seed_wow.sql:/docker-entrypoint-initdb.d/03-seed_wow.sql:ro
+      # Inicializacion automatica la primera vez: dump completo de la BD
+      # (esquema + todas las migraciones + seeds aplicados). Si el volumen
+      # ya existe, este script NO se vuelve a ejecutar.
+      - ./database/dump_completo.sql:/docker-entrypoint-initdb.d/01-dump_completo.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpass123"]
       interval: 5s
